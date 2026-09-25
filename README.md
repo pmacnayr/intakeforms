@@ -59,9 +59,29 @@ seeing the form.
 
 ### 4. Deploy
 Push this folder to a GitHub repo and import it into Vercel (or any host
-that runs Next.js). Add the same two env vars from `.env.local` in the
-host's environment variable settings. Point your DNS (e.g.
-`intake.10xlaw.com`) at it.
+that runs Next.js). Add **all six** env vars from `.env.local.example` in
+the host's environment variable settings — not just the two Clerk keys.
+The four `NEXT_PUBLIC_CLERK_*` path vars are what keep users on this app's
+own `/sign-in` and `/sign-up` pages; without them, Clerk falls back to its
+hosted Account Portal.
+
+If you're using a Clerk production instance with a custom domain (e.g.
+`signintake.com` instead of a `*.accounts.dev` domain), Clerk's dashboard
+needs its own setup too, separate from the env vars above:
+- **Domains** — add the CNAME records Clerk gives you for the Frontend
+  API (`clerk.<domain>`), the two DKIM records, and the mail record. If
+  you want the Account Portal to work as a fallback, also add its
+  `accounts.<domain>` CNAME with the exact target Clerk's dashboard shows
+  you (don't guess or reuse another record's target).
+- **Configure → Paths** — set `<SignIn/>`, `<SignUp/>`, and "Signing Out"
+  to "on application domain" (not "on Account Portal"), pointing at this
+  app's own `/sign-in`, `/sign-up`, and `/` (there's no `/sign-out` route
+  in this app, so point Signing Out at `/` too, not a path that 404s).
+
+`NEXT_PUBLIC_*` env vars are baked in at build time, not read at runtime —
+after adding or changing them in Vercel, make sure a real rebuild runs
+(push a new commit, or redeploy without reusing the build cache) rather
+than re-promoting an old build that predates the change.
 
 ## Updating the form itself
 
