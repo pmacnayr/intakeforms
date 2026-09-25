@@ -1,5 +1,6 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkClient, clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { isEmailAllowed } from "./lib/allowlist";
 
 // Everything requires a signed-in session EXCEPT Clerk's own sign-in/sign-up
 // pages. This matcher also covers /intake-form/* so the static form files in
@@ -11,14 +12,6 @@ const isPublicRoute = createRouteMatcher([
   "/not-authorized",
 ]);
 
-// Only staff at these firms' email domains can reach the form, even if
-// Clerk's own sign-up is left open to anyone.
-const ALLOWED_EMAIL_DOMAINS = ["10xlaw.com", "thebermanlawgroup.com"];
-
-// Individual addresses allowed in regardless of domain (e.g. an admin's
-// personal account). Keep these lowercase.
-const ALLOWED_EMAILS: string[] = [];
-
 export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return;
 
@@ -29,18 +22,25 @@ export default clerkMiddleware(async (auth, req) => {
     return;
   }
 
-  const email =
+  // Fast path: the email claim added via Clerk Dashboard → Sessions →
+  // Customize session token ({ "email": "{{user.primary_email_address}}" }).
+  let email =
     (sessionClaims?.email as string | undefined) ??
-    (sessionClaims?.primaryEmailAddress as string | undefined) ??
-    "";
-  const normalizedEmail = email.trim().toLowerCase();
-  const domain = normalizedEmail.split("@")[1];
+    (sessionClaims?.primaryEmailAddress as string | undefined);
 
-  const allowed =
-    ALLOWED_EMAILS.includes(normalizedEmail) ||
-    ALLOWED_EMAIL_DOMAINS.includes(domain ?? "");
+  // Fallback when that claim isn't configured: look the user up via Clerk's
+  // API. Only a verified primary email counts. This costs an API call per
+  // request, so configuring the claim is still recommended.
+  if (!email) {
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const primary = user.primaryEmailAddress;
+    if (primary?.verification?.status === "verified") {
+      email = primary.emailAddress;
+    }
+  }
 
-  if (!allowed) {
+  if (!isEmailAllowed(email)) {
     return NextResponse.redirect(new URL("/not-authorized", req.url));
   }
 });
