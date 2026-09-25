@@ -1,0 +1,2744 @@
+<title>Personal Injury Intake</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold:#b8892f;
+    --gold-dark:#8f6a20;
+    --gold-soft:#f4e9d3;
+    --ink:#211d16;
+    --ink-soft:#5a5346;
+    --paper:#fffdf9;
+    --paper-alt:#f6f2e9;
+    --line:#ddd4bf;
+    --line-soft:#eae3d2;
+    --danger:#a4432c;
+    --focus:#8f6a20;
+    --radius:8px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --gold:#d6a94a;
+      --gold-dark:#e6bd68;
+      --gold-soft:#2c2415;
+      --ink:#eee7d6;
+      --ink-soft:#b7ac93;
+      --paper:#17140e;
+      --paper-alt:#1e1a12;
+      --line:#3a3323;
+      --line-soft:#2a2519;
+      --danger:#e08363;
+      --focus:#e6bd68;
+    }
+  }
+  :root[data-theme="dark"]{
+    --gold:#d6a94a;
+    --gold-dark:#e6bd68;
+    --gold-soft:#2c2415;
+    --ink:#eee7d6;
+    --ink-soft:#b7ac93;
+    --paper:#17140e;
+    --paper-alt:#1e1a12;
+    --line:#3a3323;
+    --line-soft:#2a2519;
+    --danger:#e08363;
+    --focus:#e6bd68;
+  }
+
+  /* Berman Law Group palette: blue/teal accents drawn from their logo,
+     swapped in over the same neutral ink/paper base used by 10X. */
+  :root[data-firm="berman"]{
+    --gold:#2f7fa6;
+    --gold-dark:#1a4a5a;
+    --gold-soft:#e4f1f6;
+    --focus:#1a4a5a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root[data-firm="berman"]:not([data-theme="light"]){
+      --gold:#7cc3e3;
+      --gold-dark:#a8dcf0;
+      --gold-soft:#17313d;
+      --focus:#a8dcf0;
+    }
+  }
+  :root[data-firm="berman"][data-theme="dark"]{
+    --gold:#7cc3e3;
+    --gold-dark:#a8dcf0;
+    --gold-soft:#17313d;
+    --focus:#a8dcf0;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper-alt);
+    color:var(--ink);
+    font-family:"Source Sans 3", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    padding-inline:16px;
+    padding-block:20px 60px;
+  }
+  h1,h2,h3,legend{font-family:"Oswald", ui-sans-serif, system-ui, sans-serif;}
+  a{color:var(--gold-dark);}
+
+  .topbar{
+    position:sticky;
+    top:env(safe-area-inset-top, 0px);
+    z-index:30;
+    max-width:920px;
+    margin:0 auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:10px 14px;
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
+  }
+  .topbar .status{
+    font-size:.8rem;
+    color:var(--ink-soft);
+  }
+  .btn{
+    font-family:"Oswald", sans-serif;
+    font-weight:600;
+    letter-spacing:.03em;
+    font-size:.85rem;
+    text-transform:uppercase;
+    border:1px solid var(--gold-dark);
+    background:var(--gold);
+    color:#1a1408;
+    padding:10px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:filter .15s ease, transform .05s ease;
+  }
+  .btn:hover{filter:brightness(1.06);}
+  .btn:active{transform:translateY(1px);}
+  .btn[disabled]{opacity:.6;cursor:progress;}
+  .btn.secondary{
+    background:transparent;
+    color:var(--ink);
+    border-color:var(--line);
+  }
+
+  .sheet{
+    max-width:920px;
+    margin:0 auto;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 28px rgba(0,0,0,.10);
+  }
+
+  .masthead{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:22px 26px 16px;
+    border-bottom:3px solid var(--gold);
+    background:linear-gradient(180deg, var(--paper) 0%, var(--paper-alt) 100%);
+    flex-wrap:wrap;
+  }
+  .logo{display:flex; align-items:center; gap:12px;}
+  .logo-mark{
+    font-family:"Oswald", sans-serif;
+    font-weight:700;
+    font-size:2rem;
+    line-height:1;
+    letter-spacing:.01em;
+  }
+  .logo-mark .x{color:var(--gold-dark);}
+  .logo-sub{
+    font-size:.72rem;
+    color:var(--ink-soft);
+    line-height:1.3;
+    border-left:2px solid var(--line);
+    padding-left:10px;
+  }
+  .logo-sub strong{display:block; color:var(--ink); font-size:.8rem;}
+  .tagline{
+    text-align:right;
+    font-size:.72rem;
+    color:var(--ink-soft);
+    max-width:200px;
+    line-height:1.35;
+  }
+  .form-title{
+    width:100%;
+    text-align:center;
+    margin-top:14px;
+    font-size:1.3rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink);
+  }
+
+  form{padding:6px 26px 30px;}
+
+  .toprow{
+    display:grid;
+    grid-template-columns:2fr 1.2fr 1.6fr;
+    gap:14px;
+    padding:16px 0 10px;
+    border-bottom:1px solid var(--line-soft);
+  }
+
+  fieldset.section{
+    border:none;
+    border-top:1px solid var(--line-soft);
+    margin:0;
+    padding:20px 0 8px;
+  }
+  fieldset.section legend{
+    padding:0 0 10px;
+    font-size:1rem;
+    font-weight:600;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--gold-dark);
+  }
+  .subhead{
+    font-weight:600;
+    font-size:.82rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:16px 0 8px;
+  }
+  .hint{
+    font-size:.78rem;
+    color:var(--ink-soft);
+    margin:-4px 0 10px;
+  }
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  .grid4{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:14px;}
+  .row{margin-bottom:14px;}
+  .full{grid-column:1 / -1;}
+
+  label.field{display:flex; flex-direction:column; gap:5px;}
+  .field-label{
+    font-size:.78rem;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+  input[type=text], input[type=email], input[type=tel], input[type=date],
+  input[type=number], input[type=time], select, textarea{
+    font-family:inherit;
+    font-size:.92rem;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:8px 10px;
+    width:100%;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:2px solid var(--focus);
+    outline-offset:1px;
+  }
+  input:disabled, select:disabled, textarea:disabled{
+    background:var(--paper-alt);
+    color:var(--ink-soft);
+    cursor:not-allowed;
+  }
+  textarea{resize:vertical; min-height:70px; font-size:.92rem;}
+  select{appearance:auto;}
+
+  .yn{display:flex; gap:14px; align-items:center; min-height:36px;}
+  .yn label{display:flex; align-items:center; gap:5px; font-size:.88rem; cursor:pointer;}
+  .yn input{width:16px; height:16px; accent-color:var(--gold-dark); cursor:pointer;}
+  .yn-field{display:flex; flex-direction:column; gap:5px;}
+
+  .check-row{display:flex; gap:18px; flex-wrap:wrap; align-items:center; min-height:36px;}
+  .check-row label{display:flex; align-items:center; gap:6px; font-size:.88rem; cursor:pointer;}
+  .check-row input{width:16px; height:16px; accent-color:var(--gold-dark); cursor:pointer;}
+
+  .inline-question{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px;
+    font-size:.9rem; margin-bottom:12px;
+  }
+  .inline-question .yn{min-height:auto;}
+  .inline-question .grow{flex:1 1 220px;}
+  .inline-question.compact{margin-bottom:8px; row-gap:4px;}
+  .inline-question.compact .field-label{white-space:nowrap;}
+
+  table.repeat{width:100%; border-collapse:collapse; margin-top:6px;}
+  table.repeat th{
+    text-align:left; font-size:.74rem; text-transform:uppercase; letter-spacing:.04em;
+    color:var(--ink-soft); font-weight:600; padding:4px 6px;
+  }
+  table.repeat td{padding:4px 6px;}
+  table.repeat input{width:100%;}
+
+  .pain-scale{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 4px;}
+  .pain-btn{
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    border:1px solid var(--line); border-radius:8px; padding:6px 4px 5px;
+    background:var(--paper); cursor:pointer; width:64px;
+  }
+  .pain-btn input{accent-color:var(--gold-dark);}
+  .pain-btn span{font-size:.62rem; color:var(--ink-soft); text-align:center; line-height:1.1;}
+  .pain-btn.on{border-color:var(--gold-dark); background:var(--gold-soft);}
+
+  .bodymap-frame{
+    position:relative; width:100%; max-width:660px; margin:10px auto 0;
+    border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    background:#ffffff; touch-action:none;
+  }
+  .bodymap-frame img{display:block; width:100%; height:auto; -webkit-user-drag:none; user-select:none;}
+  .bodymap-frame canvas{position:absolute; inset:0; width:100%; height:100%; cursor:crosshair;}
+  .bodymap-controls{
+    display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+    margin:10px auto 0; max-width:660px; font-size:.78rem; color:var(--ink-soft);
+  }
+  .tool-group{display:flex; gap:6px;}
+  .tool-btn{
+    font-family:"Source Sans 3", sans-serif; font-size:.8rem; font-weight:600;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink);
+    padding:6px 12px; border-radius:6px; cursor:pointer;
+  }
+  .tool-btn.active{border-color:var(--gold-dark); background:var(--gold-soft); color:var(--ink);}
+  .brush-size{display:flex; align-items:center; gap:6px;}
+  .brush-size input[type=range]{accent-color:var(--gold-dark); width:90px;}
+
+  .section-footer-note{font-size:.76rem; color:var(--ink-soft); margin-top:6px;}
+
+  @media (max-width:640px){
+    .toprow{grid-template-columns:1fr;}
+    .grid2, .grid3, .grid4{grid-template-columns:1fr;}
+    .masthead{flex-direction:column;}
+    .tagline{text-align:left;}
+  }
+
+</style>
+
+<div class="topbar">
+  <div>
+    <strong style="font-family:'Oswald',sans-serif;letter-spacing:.03em;" id="topbarTitle">10X Intake</strong>
+    <div class="status" id="statusLine">Draft &mdash; not yet saved</div>
+  </div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+    <div class="tool-group" role="group" aria-label="Switch firm form">
+      <button type="button" class="tool-btn active" id="firmTenx" data-firm="tenx">10X Law</button>
+      <button type="button" class="tool-btn" id="firmBerman" data-firm="berman">Berman Law Group</button>
+    </div>
+    <button type="button" class="btn secondary" id="clearBtn">Clear form</button>
+    <button type="button" class="btn" id="downloadBtn">Download PDF</button>
+  </div>
+</div>
+
+<main class="sheet">
+  <div class="masthead">
+    <div class="logo">
+      <img id="mastheadLogo" src="logo.png" alt="10X LAW - Accident & Immigration Attorneys" style="height:46px; width:auto; display:block;">
+    </div>
+    <div class="form-title" id="mastheadTitle">Personal Injury Sign-Up Form</div>
+  </div>
+
+  <form id="intakeForm">
+
+  <div id="tenxFields">
+    <div class="toprow">
+      <label class="field"><span class="field-label">Interviewer</span>
+        <input type="text" id="interviewer" data-lbl="Interviewer"></label>
+      <label class="field"><span class="field-label">Date</span>
+        <input type="date" id="intakeDate" data-lbl="Date"></label>
+      <div class="grid2" style="gap:14px;">
+        <label class="field"><span class="field-label">Source</span>
+          <input type="text" id="source" data-lbl="Source"></label>
+        <label class="field"><span class="field-label">Time</span>
+          <input type="time" id="intakeTime" data-lbl="Time"></label>
+      </div>
+    </div>
+
+    <!-- CLIENT INFORMATION -->
+    <fieldset class="section" data-section="Client Information">
+      <legend>Client Information</legend>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span>
+          <input type="text" id="cName" data-lbl="Name"></label>
+        <div class="field yn-field"><span class="field-label">Sex</span>
+          <div class="check-row">
+            <label><input type="radio" name="gender" value="Male" data-lbl="Sex">Male</label>
+            <label><input type="radio" name="gender" value="Female">Female</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="cAddress" data-lbl="Address"></label>
+      </div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">City</span>
+          <input type="text" id="cCity" data-lbl="City"></label>
+        <label class="field"><span class="field-label">State</span>
+          <input type="text" id="cState" data-lbl="State" maxlength="2" style="text-transform:uppercase;"></label>
+        <label class="field"><span class="field-label">Zip</span>
+          <input type="text" id="cZip" data-lbl="Zip"></label>
+        <div class="field yn-field"><span class="field-label">Minor</span>
+          <div class="check-row">
+            <label><input type="radio" name="minor" value="Yes" data-lbl="Minor">Yes</label>
+            <label><input type="radio" name="minor" value="No">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">County</span>
+          <input type="text" id="cCounty" data-lbl="County"></label>
+        <label class="field"><span class="field-label">Mother</span>
+          <input type="text" id="cMother" data-lbl="Mother"></label>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="cPhone" data-lbl="Phone"></label>
+        <label class="field"><span class="field-label">Father</span>
+          <input type="text" id="cFather" data-lbl="Father"></label>
+      </div>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Email</span>
+          <input type="email" id="cEmail" data-lbl="Email"></label>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Date of Birth</span>
+          <input type="date" id="cDob" data-lbl="Date of Birth"></label>
+        <label class="field"><span class="field-label">Place of Birth</span>
+          <select id="cPob" data-lbl="Place of Birth">
+            <option value="">--Select--</option>
+            <optgroup label="U.S. States &amp; Territories">
+              <option>Alabama</option><option>Alaska</option><option>Arizona</option>
+              <option>Arkansas</option><option>California</option><option>Colorado</option>
+              <option>Connecticut</option><option>Delaware</option><option>District of Columbia</option>
+              <option>Florida</option><option>Georgia</option><option>Hawaii</option>
+              <option>Idaho</option><option>Illinois</option><option>Indiana</option>
+              <option>Iowa</option><option>Kansas</option><option>Kentucky</option>
+              <option>Louisiana</option><option>Maine</option><option>Maryland</option>
+              <option>Massachusetts</option><option>Michigan</option><option>Minnesota</option>
+              <option>Mississippi</option><option>Missouri</option><option>Montana</option>
+              <option>Nebraska</option><option>Nevada</option><option>New Hampshire</option>
+              <option>New Jersey</option><option>New Mexico</option><option>New York</option>
+              <option>North Carolina</option><option>North Dakota</option><option>Ohio</option>
+              <option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option>
+              <option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option>
+              <option>Tennessee</option><option>Texas</option><option>Utah</option>
+              <option>Vermont</option><option>Virginia</option><option>Washington</option>
+              <option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
+              <option>American Samoa</option><option>Guam</option><option>Northern Mariana Islands</option>
+              <option>Puerto Rico</option><option>U.S. Virgin Islands</option>
+            </optgroup>
+            <optgroup label="Countries">
+              <option>United States</option><option>Mexico</option><option>Cuba</option>
+              <option>Haiti</option><option>Dominican Republic</option><option>Colombia</option>
+              <option>Venezuela</option><option>Honduras</option><option>Guatemala</option>
+              <option>El Salvador</option><option>Jamaica</option><option>Canada</option>
+              <option>Belize</option><option>Costa Rica</option><option>Nicaragua</option>
+              <option>Panama</option><option>Argentina</option><option>Bolivia</option>
+              <option>Brazil</option><option>Chile</option><option>Ecuador</option>
+              <option>Guyana</option><option>Paraguay</option><option>Peru</option>
+              <option>Suriname</option><option>Uruguay</option>
+              <option>Other</option>
+            </optgroup>
+          </select></label>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Marital Status</span>
+          <select id="cMarital" data-lbl="Marital Status">
+            <option value="">--Select--</option>
+            <option>Single</option><option>Married</option><option>Divorced</option>
+            <option>Widowed</option><option>Separated</option><option>Domestic Partner</option>
+          </select></label>
+        <label class="field"><span class="field-label">Spouse's Name</span>
+          <input type="text" id="cSpouse" data-lbl="Spouse's Name"></label>
+      </div>
+
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Language Spoken</span>
+          <select id="cLang" data-lbl="Language Spoken">
+            <option value="">--Select--</option>
+            <option>English</option><option>Spanish</option><option>Haitian Creole</option>
+            <option>Portuguese</option><option>French</option><option>Other</option>
+          </select></label>
+        <div class="field yn-field"><span class="field-label">Are You Bilingual?</span>
+          <div class="check-row">
+            <label><input type="radio" name="bilingual" value="Yes" data-lbl="Bilingual">Yes</label>
+            <label><input type="radio" name="bilingual" value="No">No</label>
+          </div>
+        </div>
+        <label class="field"><span class="field-label">SSN</span>
+          <input type="text" id="cSsn" data-lbl="SSN" placeholder="XXX-XX-XXXX"></label>
+      </div>
+
+      <div class="subhead">Social Media</div>
+      <div id="socialMediaRows"></div>
+
+      <div class="row full" style="margin-top:14px;">
+        <label class="field"><span class="field-label">Any money owed to the government, or government-mandated payments (e.g. back taxes, child support, and/or alimony)?</span>
+          <input type="text" id="cGovOwed" data-lbl="Money owed to government"></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Recipient of US Social Security Act, any Federal, state or local income disability act, or other public programs providing medical expenses, disability payment or other similar benefits?</span>
+        <div class="yn"><label><input type="radio" name="ssRecipient" value="Yes" data-lbl="SS/disability program recipient">Yes</label>
+          <label><input type="radio" name="ssRecipient" value="No">No</label></div>
+      </div>
+      <p class="hint">If yes, please have the client complete form SSA-3288 (attach separately).</p>
+
+      <div class="inline-question">
+        <span>Any companion(s)?</span>
+        <div class="yn"><label><input type="radio" name="companionsAny" value="Yes" data-lbl="Any companions">Yes</label>
+          <label><input type="radio" name="companionsAny" value="No">No</label></div>
+      </div>
+      <div class="subhead">Companion(s) &mdash; if yes, who</div>
+      <div id="companionRows"></div>
+
+      <div class="inline-question" style="margin-top:12px;">
+        <span>Any releases signed?</span>
+        <div class="yn"><label><input type="radio" name="releasesSigned" value="Yes" data-lbl="Any releases signed">Yes</label>
+          <label><input type="radio" name="releasesSigned" value="No">No</label></div>
+      </div>
+    </fieldset>
+
+    <!-- ACCIDENT INFORMATION -->
+    <fieldset class="section" data-section="Accident Information">
+      <legend>Accident Information</legend>
+
+      <div class="inline-question">
+        <span>Photos?</span>
+        <div class="yn"><label><input type="radio" name="photos" value="Yes" data-lbl="Photos">Yes</label>
+          <label><input type="radio" name="photos" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If not, date acquired</span>
+          <input type="date" id="photoDate" data-lbl="Photo date acquired"></label>
+      </div>
+      <p class="hint">Photographs must be delivered to the firm within 5 days.</p>
+
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Date of Accident</span>
+          <input type="date" id="accDate" data-lbl="Date of Accident"></label>
+        <label class="field"><span class="field-label">Time</span>
+          <input type="time" id="accTime" data-lbl="Time of Accident"></label>
+        <label class="field"><span class="field-label">Weather</span>
+          <select id="accWeather" data-lbl="Weather">
+            <option value="">--Select--</option>
+            <option>Clear</option><option>Cloudy</option><option>Rain</option>
+            <option>Fog</option><option>Snow</option><option>Ice</option><option>Other</option>
+          </select></label>
+      </div>
+
+      <div class="row">
+        <span class="field-label">Type of Case</span>
+        <div class="check-row" style="margin-top:5px;">
+          <label><input type="checkbox" id="typeAA" data-lbl="Type of Case: MVA">MVA</label>
+          <label><input type="checkbox" id="typeSF" data-lbl="Type of Case: Slip/Fall">Slip/Fall</label>
+          <label style="flex:1 1 220px;">Other:
+            <input type="text" id="typeOther" data-lbl="Type of Case: Other" style="display:inline-block; width:auto; flex:1; margin-left:6px;"></label>
+        </div>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Police Dept.</span>
+          <input type="text" id="policeDept" data-lbl="Police Dept."></label>
+        <label class="field"><span class="field-label">Report #</span>
+          <input type="text" id="reportNum" data-lbl="Report #"></label>
+      </div>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Street / Intersection of Accident</span>
+          <input type="text" id="accStreet" data-lbl="Street / Intersection of Accident"></label>
+      </div>
+
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">City</span>
+          <input type="text" id="accCity" data-lbl="City"></label>
+        <label class="field"><span class="field-label">County</span>
+          <input type="text" id="accCounty" data-lbl="County (accident)"></label>
+        <label class="field"><span class="field-label">State</span>
+          <select id="accState" data-lbl="State"></select></label>
+      </div>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Description of Accident</span>
+          <textarea id="accDesc" data-lbl="Description of Accident" rows="4"></textarea></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Citations given?</span>
+        <div class="yn"><label><input type="radio" name="citations" value="Yes" data-lbl="Citations given">Yes</label>
+          <label><input type="radio" name="citations" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If yes, to who and for what</span>
+          <input type="text" id="citationWho" data-lbl="Citation to who/for what"></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Wearing seat-belt?</span>
+        <div class="yn"><label><input type="radio" name="seatbelt" value="Yes" data-lbl="Wearing seat-belt">Yes</label>
+          <label><input type="radio" name="seatbelt" value="No">No</label></div>
+        <span>Car seat in vehicle?</span>
+        <div class="yn"><label><input type="radio" name="carseat" value="Yes" data-lbl="Car seat in vehicle">Yes</label>
+          <label><input type="radio" name="carseat" value="No">No</label></div>
+        <label class="field"><span class="field-label">If yes, how many</span>
+          <input type="number" min="0" id="carseatCount" data-lbl="Car seats, how many" style="width:70px;"></label>
+        <span>Airbags deployed?</span>
+        <div class="yn"><label><input type="radio" name="airbags" value="Yes" data-lbl="Airbags deployed">Yes</label>
+          <label><input type="radio" name="airbags" value="No">No</label></div>
+      </div>
+
+      <div class="row">
+        <span class="field-label">Seat location of client</span>
+        <div class="check-row" style="margin-top:5px;">
+          <label><input type="checkbox" id="seatDriver" data-lbl="Seat: Driver">Driver</label>
+          <label><input type="checkbox" id="seatFront" data-lbl="Seat: Front Passenger">Front Passenger</label>
+          <label><input type="checkbox" id="seatRearDriver" data-lbl="Seat: Rear Driver Side">Rear Driver Side</label>
+          <label><input type="checkbox" id="seatRearMiddle" data-lbl="Seat: Rear Middle">Rear Middle</label>
+          <label><input type="checkbox" id="seatRearPass" data-lbl="Seat: Rear Passenger Side">Rear Passenger Side</label>
+        </div>
+      </div>
+
+      <div class="inline-question">
+        <span>Does client live with a relative that owns a vehicle?</span>
+        <div class="yn"><label><input type="radio" name="relativeVehicle" value="Yes" data-lbl="Lives with relative who owns vehicle">Yes</label>
+          <label><input type="radio" name="relativeVehicle" value="No">No</label></div>
+      </div>
+      <div id="relativeVehicleFields">
+        <div class="grid2 row">
+          <label class="field"><span class="field-label">If yes, name of relative</span>
+            <input type="text" id="relativeName" data-lbl="Relative's name"></label>
+          <label class="field"><span class="field-label">Relationship</span>
+            <select id="relativeRel" data-lbl="Relationship to relative"></select></label>
+        </div>
+        <div class="row">
+          <label class="field"><span class="field-label">Relative's Vehicle Info (Color, Year, Make, Model)</span>
+            <input type="text" id="relativeVehicleInfo" data-lbl="Relative's vehicle info"></label>
+        </div>
+
+        <div class="grid2 row">
+          <label class="field"><span class="field-label">Whose car were you in at the time of accident?</span>
+            <input type="text" id="carOwnerAtTime" data-lbl="Whose car at time of accident"></label>
+          <label class="field"><span class="field-label">Relationship to vehicle owner</span>
+            <input type="text" id="carOwnerRel" data-lbl="Relationship to vehicle owner"></label>
+        </div>
+      </div>
+
+      <div class="subhead">Description of Vehicle Involved in Accident</div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">Color</span>
+          <input type="text" id="vColor" data-lbl="Vehicle Color"></label>
+        <label class="field"><span class="field-label">Year</span>
+          <input type="text" id="vYear" data-lbl="Vehicle Year"></label>
+        <label class="field"><span class="field-label">Make</span>
+          <input type="text" id="vMake" data-lbl="Vehicle Make"></label>
+        <label class="field"><span class="field-label">Model</span>
+          <input type="text" id="vModel" data-lbl="Vehicle Model"></label>
+      </div>
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">VIN</span>
+          <input type="text" id="vVin" data-lbl="VIN"></label>
+        <label class="field"><span class="field-label">Tag #</span>
+          <input type="text" id="vTag" data-lbl="Tag #"></label>
+        <label class="field"><span class="field-label">Estimated Cost of Damage</span>
+          <input type="text" id="vDamageCost" data-lbl="Estimated Cost of Damage"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Vehicle's Damage Area</span>
+          <input type="text" id="vDamageArea" data-lbl="Vehicle's Damage Area"></label>
+        <label class="field"><span class="field-label">Current Address/Location of Vehicle</span>
+          <input type="text" id="vLocation" data-lbl="Current Address/Location of Vehicle"></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Has your vehicle been serviced in the last 90 days?</span>
+        <div class="yn"><label><input type="radio" name="vehicleServiced" value="Yes" data-lbl="Vehicle serviced in last 90 days">Yes</label>
+          <label><input type="radio" name="vehicleServiced" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If yes, service center's name and phone number</span>
+          <input type="text" id="serviceCenter" data-lbl="Service center name/phone"></label>
+      </div>
+    </fieldset>
+
+    <!-- EMPLOYER / WORKERS COMP -->
+    <fieldset class="section" id="employerSection" data-section="Employer &amp; Workers' Comp Information">
+      <legend>Employer &amp; Workers' Comp Information</legend>
+      <p class="hint">If applicable</p>
+
+      <div class="inline-question">
+        <span>Were you on the job at the time of accident?</span>
+        <div class="yn"><label><input type="radio" name="onJob" value="Yes" data-lbl="On the job at time of accident">Yes</label>
+          <label><input type="radio" name="onJob" value="No">No</label></div>
+      </div>
+
+      <div class="subhead">Worker's Comp Information</div>
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Carrier</span>
+          <input type="text" id="wcCarrier" data-lbl="WC Carrier"></label>
+        <label class="field"><span class="field-label">Date Employer Notified</span>
+          <input type="date" id="wcNoticeDate" data-lbl="Date Employer Notified"></label>
+        <label class="field"><span class="field-label">Name</span>
+          <input type="text" id="wcName" data-lbl="WC Contact Name"></label>
+      </div>
+
+      <div class="subhead" style="margin-top:16px;">Employer #1</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Employer Name</span>
+          <input type="text" id="emp1Name" data-lbl="Employer #1 Name"></label>
+        <label class="field"><span class="field-label">Type of Work</span>
+          <input type="text" id="emp1Type" data-lbl="Employer #1 Type of Work"></label>
+      </div>
+      <div class="row"><label class="field"><span class="field-label">Address</span>
+        <input type="text" id="emp1Addr" data-lbl="Employer #1 Address"></label></div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="emp1Phone" data-lbl="Employer #1 Phone"></label>
+        <label class="field"><span class="field-label">Part Time</span>
+          <input type="text" id="emp1PT" data-lbl="Employer #1 Part Time"></label>
+        <label class="field"><span class="field-label">Full Time</span>
+          <input type="text" id="emp1FT" data-lbl="Employer #1 Full Time"></label>
+        <label class="field"><span class="field-label">Rate of Pay</span>
+          <input type="text" id="emp1Rate" data-lbl="Employer #1 Rate of Pay"></label>
+      </div>
+      <div class="inline-question">
+        <span>Any time lost at work?</span>
+        <div class="yn"><label><input type="radio" name="emp1Lost" value="Yes" data-lbl="Employer #1 time lost at work">Yes</label>
+          <label><input type="radio" name="emp1Lost" value="No">No</label></div>
+        <label class="field"><span class="field-label">How much?</span>
+          <input type="text" id="emp1LostAmt" data-lbl="Employer #1 how much lost"></label>
+      </div>
+
+      <div class="subhead" style="margin-top:16px;">Employer #2</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Employer Name</span>
+          <input type="text" id="emp2Name" data-lbl="Employer #2 Name"></label>
+        <label class="field"><span class="field-label">Type of Work</span>
+          <input type="text" id="emp2Type" data-lbl="Employer #2 Type of Work"></label>
+      </div>
+      <div class="row"><label class="field"><span class="field-label">Address</span>
+        <input type="text" id="emp2Addr" data-lbl="Employer #2 Address"></label></div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="emp2Phone" data-lbl="Employer #2 Phone"></label>
+        <label class="field"><span class="field-label">Part Time</span>
+          <input type="text" id="emp2PT" data-lbl="Employer #2 Part Time"></label>
+        <label class="field"><span class="field-label">Full Time</span>
+          <input type="text" id="emp2FT" data-lbl="Employer #2 Full Time"></label>
+        <label class="field"><span class="field-label">Rate of Pay</span>
+          <input type="text" id="emp2Rate" data-lbl="Employer #2 Rate of Pay"></label>
+      </div>
+      <div class="inline-question">
+        <span>Any time lost at work?</span>
+        <div class="yn"><label><input type="radio" name="emp2Lost" value="Yes" data-lbl="Employer #2 time lost at work">Yes</label>
+          <label><input type="radio" name="emp2Lost" value="No">No</label></div>
+        <label class="field"><span class="field-label">How much?</span>
+          <input type="text" id="emp2LostAmt" data-lbl="Employer #2 how much lost"></label>
+      </div>
+    </fieldset>
+
+    <!-- MEDICAL TREATMENT -->
+    <fieldset class="section" data-section="Medical Treatment">
+      <legend>Medical Treatment</legend>
+
+      <div class="inline-question">
+        <span>Transported by ambulance?</span>
+        <div class="yn"><label><input type="radio" name="ambulance" value="Yes" data-lbl="Transported by ambulance">Yes</label>
+          <label><input type="radio" name="ambulance" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">Name of Ambulance Co.</span>
+          <input type="text" id="ambulanceName" data-lbl="Ambulance Co."></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Were you admitted?</span>
+        <div class="yn"><label><input type="radio" name="admitted" value="Yes" data-lbl="Admitted to hospital">Yes</label>
+          <label><input type="radio" name="admitted" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">Length of Stay</span>
+          <input type="text" id="lengthOfStay" data-lbl="Length of Stay"></label>
+      </div>
+
+      <div class="subhead">Doctors / Hospitals Treated</div>
+      <div style="overflow-x:auto;">
+        <table class="repeat" id="doctorTable">
+          <thead><tr><th style="width:30%">Doctor(s) / Hospital Name</th><th style="width:25%">Type of Doctor</th><th style="width:20%">Phone #</th><th style="width:20%">Date of Treatment</th></tr></thead>
+          <tbody id="doctorRows"></tbody>
+        </table>
+      </div>
+    </fieldset>
+
+    <!-- INJURIES -->
+    <fieldset class="section" data-section="Injuries">
+      <legend>Injuries</legend>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Describe all parts of the body affected by this accident</span>
+          <textarea id="injuryDesc" data-lbl="Body parts affected" rows="3"></textarea></label>
+      </div>
+
+      <div class="subhead">Mark Areas of Pain</div>
+      <p class="hint">Click and drag directly on the diagram below to highlight the injured area(s) &mdash; front, back, side, hands, head and feet are all on one sheet, exactly as printed on the intake form.</p>
+      <div class="bodymap-frame">
+        <img id="bodyMapImg" src="bodymap.png" alt="Body diagram for marking areas of injury" draggable="false">
+        <canvas id="bodyMapCanvas" aria-label="Draw on the body diagram to mark pain"></canvas>
+      </div>
+      <div class="bodymap-controls">
+        <div class="tool-group">
+          <button type="button" class="tool-btn active" id="toolHighlight" data-tool="highlight">Highlight</button>
+          <button type="button" class="tool-btn" id="toolErase" data-tool="erase">Eraser</button>
+        </div>
+        <div class="brush-size">
+          <span>Brush</span>
+          <input type="range" id="brushSize" min="8" max="40" value="20">
+        </div>
+        <button type="button" class="btn secondary" id="clearMarkers" style="padding:6px 12px; font-size:.78rem;">Clear highlights</button>
+      </div>
+
+      <div class="subhead" style="margin-top:16px;">10-Point Pain Rating Scale</div>
+      <div class="pain-scale" id="painScale"></div>
+
+      <div class="row" style="margin-top:10px;">
+        <label class="field"><span class="field-label">Describe any prior injuries, including dates</span>
+          <textarea id="priorInjuries" data-lbl="Prior injuries" rows="3"></textarea></label>
+      </div>
+    </fieldset>
+
+    <!-- PRIOR ATTORNEY -->
+    <fieldset class="section" data-section="Prior Attorney">
+      <legend>Prior Attorney</legend>
+
+      <div class="inline-question">
+        <span>Prior attorneys for PI or WC injuries (if applicable)?</span>
+        <div class="yn"><label><input type="radio" name="priorAtty" value="Yes" data-lbl="Prior attorneys for PI/WC">Yes</label>
+          <label><input type="radio" name="priorAtty" value="No">No</label></div>
+      </div>
+      <div class="inline-question">
+        <span>Represented by an attorney for this accident?</span>
+        <div class="yn"><label><input type="radio" name="reprAtty" value="Yes" data-lbl="Represented by attorney for this accident">Yes</label>
+          <label><input type="radio" name="reprAtty" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">Name</span>
+          <input type="text" id="attyName" data-lbl="Attorney Name"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="attyPhone" data-lbl="Attorney Phone"></label>
+        <label class="field"><span class="field-label">Fax</span>
+          <input type="tel" id="attyFax" data-lbl="Attorney Fax"></label>
+      </div>
+      <div class="row"><label class="field"><span class="field-label">Address</span>
+        <input type="text" id="attyAddr" data-lbl="Attorney Address"></label></div>
+      <div class="row"><label class="field"><span class="field-label">Reason for Termination or Turndown</span>
+        <input type="text" id="attyReason" data-lbl="Reason for Termination or Turndown"></label></div>
+    </fieldset>
+
+    <!-- INSURANCE -->
+    <fieldset class="section" data-section="Insurance Information">
+      <legend>Insurance Information</legend>
+
+      <div class="subhead">Client Automobile Insurance</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Client</span><input type="text" id="caiClient" data-lbl="CAI Client"></label>
+        <label class="field"><span class="field-label">Insured</span><input type="text" id="caiInsured" data-lbl="CAI Insured"></label>
+        <label class="field"><span class="field-label">Carrier</span><input type="text" id="caiCarrier" data-lbl="CAI Carrier"></label>
+        <label class="field"><span class="field-label">Address</span><input type="text" id="caiAddress" data-lbl="CAI Address"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="caiPhone" data-lbl="CAI Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span><input type="text" id="caiPolicy" data-lbl="CAI Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span><input type="text" id="caiClaim" data-lbl="CAI Claim #"></label>
+        <label class="field"><span class="field-label">Adjuster</span><input type="text" id="caiAdjuster" data-lbl="CAI Adjuster"></label>
+        <label class="field"><span class="field-label">Adjuster Phone</span><input type="tel" id="caiAdjPhone" data-lbl="CAI Adjuster Phone"></label>
+        <label class="field"><span class="field-label">Fax #</span><input type="tel" id="caiFax" data-lbl="CAI Fax #"></label>
+      </div>
+
+      <div class="subhead">Host Vehicle Insurance</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Owner</span><input type="text" id="hviOwner" data-lbl="HVI Owner"></label>
+        <label class="field"><span class="field-label">Insured</span><input type="text" id="hviInsured" data-lbl="HVI Insured"></label>
+        <label class="field"><span class="field-label">Carrier</span><input type="text" id="hviCarrier" data-lbl="HVI Carrier"></label>
+        <label class="field"><span class="field-label">Address</span><input type="text" id="hviAddress" data-lbl="HVI Address"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="hviPhone" data-lbl="HVI Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span><input type="text" id="hviPolicy" data-lbl="HVI Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span><input type="text" id="hviClaim" data-lbl="HVI Claim #"></label>
+        <label class="field"><span class="field-label">Adjuster</span><input type="text" id="hviAdjuster" data-lbl="HVI Adjuster"></label>
+        <label class="field"><span class="field-label">Adjuster Phone</span><input type="tel" id="hviAdjPhone" data-lbl="HVI Adjuster Phone"></label>
+        <label class="field"><span class="field-label">Fax #</span><input type="tel" id="hviFax" data-lbl="HVI Fax #"></label>
+      </div>
+
+      <div class="subhead">Client Health Insurance</div>
+      <label class="check-row" style="margin-bottom:8px;"><input type="checkbox" id="chiWaiting" data-lbl="Health Insurance: Waiting on Information">Waiting on Information</label>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Carrier</span><input type="text" id="chiCarrier" data-lbl="CHI Carrier"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="chiPhone" data-lbl="CHI Phone"></label>
+        <label class="field"><span class="field-label">Group #</span><input type="text" id="chiGroup" data-lbl="CHI Group #"></label>
+        <label class="field"><span class="field-label">ID #</span><input type="text" id="chiId" data-lbl="CHI ID #"></label>
+      </div>
+      <div class="grid2 row">
+        <div class="field yn-field"><span class="field-label">Medicare</span>
+          <div class="check-row"><label><input type="radio" name="medicare" value="Yes" data-lbl="Medicare">Yes</label><label><input type="radio" name="medicare" value="No">No</label></div></div>
+        <label class="field"><span class="field-label">Medicare #</span><input type="text" id="medicareNum" data-lbl="Medicare #"></label>
+        <div class="field yn-field"><span class="field-label">Medicaid</span>
+          <div class="check-row"><label><input type="radio" name="medicaid" value="Yes" data-lbl="Medicaid">Yes</label><label><input type="radio" name="medicaid" value="No">No</label></div></div>
+        <label class="field"><span class="field-label">Medicaid #</span><input type="text" id="medicaidNum" data-lbl="Medicaid #"></label>
+      </div>
+
+      <div class="subhead">Defendant Information</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Driver Name</span><input type="text" id="defDriver" data-lbl="Defendant Driver Name"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="defDriverPhone" data-lbl="Defendant Driver Phone"></label>
+        <label class="field full"><span class="field-label">Address</span><input type="text" id="defDriverAddr" data-lbl="Defendant Driver Address"></label>
+        <label class="field"><span class="field-label">Carrier</span><input type="text" id="defCarrier" data-lbl="Defendant Carrier"></label>
+        <label class="field"><span class="field-label">Address</span><input type="text" id="defCarrierAddr" data-lbl="Defendant Carrier Address"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="defCarrierPhone" data-lbl="Defendant Carrier Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span><input type="text" id="defPolicy" data-lbl="Defendant Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span><input type="text" id="defClaim" data-lbl="Defendant Claim #"></label>
+        <label class="field"><span class="field-label">Adjuster</span><input type="text" id="defAdjuster" data-lbl="Defendant Adjuster"></label>
+        <label class="field"><span class="field-label">Adjuster Phone</span><input type="tel" id="defAdjPhone" data-lbl="Defendant Adjuster Phone"></label>
+      </div>
+
+      <div class="subhead">Vehicle Owner (if different from driver)</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Owner Name</span><input type="text" id="ownName" data-lbl="Owner Name"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="ownPhone" data-lbl="Owner Phone"></label>
+        <label class="field full"><span class="field-label">Address</span><input type="text" id="ownAddr" data-lbl="Owner Address"></label>
+        <label class="field"><span class="field-label">Carrier</span><input type="text" id="ownCarrier" data-lbl="Owner Carrier"></label>
+        <label class="field"><span class="field-label">Address</span><input type="text" id="ownCarrierAddr" data-lbl="Owner Carrier Address"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="ownCarrierPhone" data-lbl="Owner Carrier Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span><input type="text" id="ownPolicy" data-lbl="Owner Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span><input type="text" id="ownClaim" data-lbl="Owner Claim #"></label>
+        <label class="field"><span class="field-label">Adjuster</span><input type="text" id="ownAdjuster" data-lbl="Owner Adjuster"></label>
+        <label class="field"><span class="field-label">Adjuster Phone</span><input type="tel" id="ownAdjPhone" data-lbl="Owner Adjuster Phone"></label>
+      </div>
+    </fieldset>
+
+    <!-- STATEMENTS / EMERGENCY CONTACT -->
+    <fieldset class="section" data-section="Statements &amp; Emergency Contact">
+      <legend>Statements &amp; Emergency Contact</legend>
+
+      <div class="subhead">Has a written or recorded statement been given to anyone?</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span><input type="text" id="stmtName1" data-lbl="Statement given to (1)"></label>
+        <label class="field"><span class="field-label">Insurance Co.</span><input type="text" id="stmtIns1" data-lbl="Statement Ins Co (1)"></label>
+        <label class="field"><span class="field-label">Name</span><input type="text" id="stmtName2" data-lbl="Statement given to (2)"></label>
+        <label class="field"><span class="field-label">Insurance Co.</span><input type="text" id="stmtIns2" data-lbl="Statement Ins Co (2)"></label>
+      </div>
+
+      <div class="subhead">Emergency Contact</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span><input type="text" id="ecName" data-lbl="Emergency Contact Name"></label>
+        <label class="field"><span class="field-label">Relationship</span><select id="ecRel" data-lbl="Emergency Contact Relationship"></select></label>
+        <label class="field full"><span class="field-label">Address</span><input type="text" id="ecAddr" data-lbl="Emergency Contact Address"></label>
+        <label class="field"><span class="field-label">Phone</span><input type="tel" id="ecPhone" data-lbl="Emergency Contact Phone"></label>
+      </div>
+
+      <div class="inline-question" style="margin-top:6px;">
+        <span>Do you want information on getting money now from pre-settlement funding?</span>
+        <div class="yn"><label><input type="radio" name="presettlement" value="Yes" data-lbl="Wants pre-settlement funding info">Yes</label>
+          <label><input type="radio" name="presettlement" value="No">No</label></div>
+      </div>
+    </fieldset>
+
+    <fieldset class="section" data-section="Additional Comments">
+      <legend>Additional Comments or Information</legend>
+      <textarea id="additionalComments" data-lbl="Additional Comments" rows="4"></textarea>
+    </fieldset>
+
+  </div>
+
+  <div id="bermanFields" style="display:none;">
+
+    <div class="toprow">
+      <label class="field"><span class="field-label">Interviewer</span>
+        <input type="text" id="bInterviewer" data-lbl="Interviewer"></label>
+      <label class="field"><span class="field-label">Date</span>
+        <input type="date" id="bIntakeDate" data-lbl="Date"></label>
+      <div class="grid2" style="gap:14px;">
+        <label class="field"><span class="field-label">Source</span>
+          <input type="text" id="bSource" data-lbl="Source"></label>
+        <label class="field"><span class="field-label">Time</span>
+          <input type="time" id="bIntakeTime" data-lbl="Time"></label>
+      </div>
+    </div>
+
+    <!-- CLIENT INFORMATION -->
+    <fieldset class="section" data-section="Client Information">
+      <legend>Client Information</legend>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span>
+          <input type="text" id="bName" data-lbl="Name"></label>
+        <div class="field yn-field"><span class="field-label">Sex</span>
+          <div class="check-row">
+            <label><input type="radio" name="bGender" value="Male" data-lbl="Sex">Male</label>
+            <label><input type="radio" name="bGender" value="Female">Female</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="bAddress" data-lbl="Address"></label>
+      </div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">City</span>
+          <input type="text" id="bCity" data-lbl="City"></label>
+        <label class="field"><span class="field-label">State</span>
+          <input type="text" id="bState" data-lbl="State" maxlength="2" style="text-transform:uppercase;"></label>
+        <label class="field"><span class="field-label">Zip</span>
+          <input type="text" id="bZip" data-lbl="Zip"></label>
+        <div class="field yn-field"><span class="field-label">Minor</span>
+          <div class="check-row">
+            <label><input type="radio" name="bMinor" value="Yes" data-lbl="Minor">Yes</label>
+            <label><input type="radio" name="bMinor" value="No">No</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">County</span>
+          <input type="text" id="bCounty" data-lbl="County"></label>
+        <label class="field"><span class="field-label">Mother</span>
+          <input type="text" id="bMother" data-lbl="Mother"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="bPhone" data-lbl="Phone"></label>
+        <label class="field"><span class="field-label">Father</span>
+          <input type="text" id="bFather" data-lbl="Father"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Email</span>
+          <input type="email" id="bEmail" data-lbl="Email"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Date of Birth</span>
+          <input type="date" id="bDob" data-lbl="Date of Birth"></label>
+        <label class="field"><span class="field-label">Place of Birth</span>
+          <select id="bPob" data-lbl="Place of Birth"></select></label>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Marital Status</span>
+          <select id="bMaritalStatus" data-lbl="Marital Status">
+            <option value="">--Select--</option>
+            <option>Single</option><option>Married</option><option>Divorced</option>
+            <option>Widowed</option><option>Separated</option><option>Domestic Partner</option>
+          </select></label>
+        <label class="field"><span class="field-label">Spouse's Name</span>
+          <input type="text" id="bSpouseName" data-lbl="Spouse's Name"></label>
+      </div>
+
+      <div class="grid2 row">
+        <div class="field yn-field"><span class="field-label">Are You Bilingual?</span>
+          <div class="check-row">
+            <label><input type="radio" name="bBilingual" value="Yes" data-lbl="Bilingual">Yes</label>
+            <label><input type="radio" name="bBilingual" value="No">No</label>
+          </div>
+        </div>
+        <label class="field"><span class="field-label">SSN</span>
+          <input type="text" id="bSSN" data-lbl="SSN" placeholder="XXX-XX-XXXX"></label>
+      </div>
+
+      <div class="subhead">Social Media</div>
+      <div id="bSocialMediaRows"></div>
+
+      <div class="row full" style="margin-top:14px;">
+        <label class="field"><span class="field-label">Any money owed to the government, or government-mandated payments (e.g. back taxes, child support, and/or alimony)?</span>
+          <input type="text" id="bGovMoney" data-lbl="Money owed to government"></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Recipient of US Social Security Act, any Federal, state or local income disability act, or other public programs providing medical expenses, disability payment or other similar benefits?</span>
+        <div class="yn"><label><input type="radio" name="bSSARecipient" value="Yes" data-lbl="SS/disability program recipient">Yes</label>
+          <label><input type="radio" name="bSSARecipient" value="No">No</label></div>
+      </div>
+      <p class="hint">If yes, please have the client complete form SSA-3288 (attach separately).</p>
+
+      <div class="inline-question">
+        <span>Any Companion(s)?</span>
+        <div class="yn"><label><input type="radio" name="bCompanionsAny" value="Yes" data-lbl="Any companions">Yes</label>
+          <label><input type="radio" name="bCompanionsAny" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If Yes, Who</span>
+          <input type="text" id="bCompanionWho" data-lbl="Companion(s) name"></label>
+      </div>
+    </fieldset>
+
+    <!-- ACCIDENT INFORMATION -->
+    <fieldset class="section" data-section="Accident Information">
+      <legend>Accident Information</legend>
+
+      <div class="inline-question">
+        <span>Photos?</span>
+        <div class="yn"><label><input type="radio" name="bPhotos" value="Yes" data-lbl="Photos taken">Yes</label>
+          <label><input type="radio" name="bPhotos" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If not, date acquired</span>
+          <input type="date" id="bPhotoDate" data-lbl="Photo date acquired"></label>
+      </div>
+      <p class="hint">Photographs must be delivered to the firm within 5 days.</p>
+
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Date of Accident</span>
+          <input type="date" id="bAccDate" data-lbl="Date of Accident"></label>
+        <label class="field"><span class="field-label">Time</span>
+          <input type="time" id="bAccTime" data-lbl="Time of Accident"></label>
+        <label class="field"><span class="field-label">Weather</span>
+          <input type="text" id="bWeather" data-lbl="Weather"></label>
+      </div>
+
+      <div class="inline-question">
+        <span class="field-label">Type of Case</span>
+        <div class="yn">
+          <label><input type="radio" name="bCaseType" value="AA" data-lbl="Type of Case">Auto Accident</label>
+          <label><input type="radio" name="bCaseType" value="SF">Slip/Fall</label>
+          <label><input type="radio" name="bCaseType" value="Other">Other</label>
+        </div>
+        <label class="field grow"><span class="field-label">If Other, describe</span>
+          <input type="text" id="bCaseTypeOtherText" data-lbl="Type of Case (Other)"></label>
+      </div>
+
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Police Dept.</span>
+          <input type="text" id="bPoliceDept" data-lbl="Police Dept"></label>
+        <label class="field"><span class="field-label">Report #</span>
+          <input type="text" id="bReportNum" data-lbl="Report #"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Street / Intersection of Accident</span>
+          <input type="text" id="bAccidentLocation" data-lbl="Street/Intersection of Accident"></label>
+      </div>
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">City</span>
+          <input type="text" id="bAccCity" data-lbl="Accident City"></label>
+        <label class="field"><span class="field-label">State</span>
+          <input type="text" id="bAccState" data-lbl="Accident State" maxlength="2" style="text-transform:uppercase;"></label>
+        <label class="field"><span class="field-label">County</span>
+          <input type="text" id="bAccCounty" data-lbl="Accident County"></label>
+      </div>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Description of Accident</span>
+          <textarea id="bAccDesc" data-lbl="Description of Accident" rows="3"></textarea></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Citations Given?</span>
+        <div class="yn"><label><input type="radio" name="bCitationsGiven" value="Yes" data-lbl="Citations given">Yes</label>
+          <label><input type="radio" name="bCitationsGiven" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If yes, to who and for what</span>
+          <input type="text" id="bCitationsWho" data-lbl="Citations to who/for what"></label>
+      </div>
+
+      <div class="inline-question compact">
+        <span class="field-label">Wearing Seat-Belt?</span>
+        <div class="yn"><label><input type="radio" name="bSeatbelt" value="Yes" data-lbl="Wearing seat-belt">Yes</label>
+          <label><input type="radio" name="bSeatbelt" value="No">No</label></div>
+        <span class="field-label" style="margin-left:8px;">Airbags Deployed?</span>
+        <div class="yn"><label><input type="radio" name="bAirbags" value="Yes" data-lbl="Airbags deployed">Yes</label>
+          <label><input type="radio" name="bAirbags" value="No">No</label></div>
+      </div>
+      <div class="inline-question compact">
+        <span class="field-label">Car Seat in vehicle?</span>
+        <div class="yn"><label><input type="radio" name="bCarseat" value="Yes" data-lbl="Car seat in vehicle">Yes</label>
+          <label><input type="radio" name="bCarseat" value="No">No</label></div>
+        <label class="field" style="flex:0 1 140px;"><span class="field-label">If Yes, how many?</span>
+          <input type="number" min="0" id="bCarseatHowMany" data-lbl="Car seats, how many"></label>
+      </div>
+
+      <div class="inline-question compact">
+        <span class="field-label">Seat Location of Client</span>
+        <div class="yn" style="flex-wrap:wrap; row-gap:8px;">
+          <label><input type="radio" name="bSeatLocation" value="Driver" data-lbl="Seat: Driver">Driver</label>
+          <label><input type="radio" name="bSeatLocation" value="FrontPassenger">Front Passenger</label>
+          <label><input type="radio" name="bSeatLocation" value="RearDriverSide">Rear Driver Side</label>
+          <label><input type="radio" name="bSeatLocation" value="RearMiddle">Rear Middle</label>
+          <label><input type="radio" name="bSeatLocation" value="RearPassengerSide">Rear Passenger Side</label>
+        </div>
+      </div>
+
+      <div class="inline-question compact">
+        <span class="field-label">Lives with a relative that owns a vehicle?</span>
+        <div class="yn"><label><input type="radio" name="bRelativeVehicle" value="Yes" data-lbl="Lives with relative who owns vehicle">Yes</label>
+          <label><input type="radio" name="bRelativeVehicle" value="No">No</label></div>
+      </div>
+      <div id="bRelativeVehicleFields">
+        <div class="grid2 row">
+          <label class="field"><span class="field-label">If yes, name of relative</span>
+            <input type="text" id="bRelativeName" data-lbl="Relative's name"></label>
+          <label class="field"><span class="field-label">Relationship</span>
+            <input type="text" id="bRelativeRelationship" data-lbl="Relationship"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span class="field-label">Vehicle Info (Color, Year, Make, Model)</span>
+            <input type="text" id="bVehicleInfo" data-lbl="Vehicle Info"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span class="field-label">Whose car were you in at the time of accident?</span>
+            <input type="text" id="bWhoseCar" data-lbl="Whose car"></label>
+        </div>
+      </div>
+
+      <div class="subhead">Description of Vehicle Involved in Accident</div>
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Color</span>
+          <input type="text" id="bVehColor" data-lbl="Vehicle Color"></label>
+        <label class="field"><span class="field-label">Year</span>
+          <input type="text" id="bVehYear" data-lbl="Vehicle Year"></label>
+        <label class="field"><span class="field-label">Make</span>
+          <input type="text" id="bVehMake" data-lbl="Vehicle Make"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Model</span>
+          <input type="text" id="bVehModel" data-lbl="Vehicle Model"></label>
+        <label class="field"><span class="field-label">VIN</span>
+          <input type="text" id="bVehVin" data-lbl="VIN"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Tag #</span>
+          <input type="text" id="bVehTag" data-lbl="Tag #"></label>
+        <label class="field"><span class="field-label">Estimate Cost of Damage</span>
+          <input type="text" id="bEstDamage" data-lbl="Estimate cost of damage"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Vehicle's Damage Area</span>
+          <input type="text" id="bVehDamageArea" data-lbl="Vehicle's damage area"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Current Address/Location of Vehicle</span>
+          <input type="text" id="bVehLocation" data-lbl="Current address/location of vehicle"></label>
+      </div>
+
+      <div class="inline-question">
+        <span>Has the vehicle been serviced within the last 90 days?</span>
+        <div class="yn"><label><input type="radio" name="bServiced90" value="Yes" data-lbl="Vehicle serviced within 90 days">Yes</label>
+          <label><input type="radio" name="bServiced90" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">If yes, service center name &amp; phone number</span>
+          <input type="text" id="bServiceCenterInfo" data-lbl="Service center name/phone"></label>
+      </div>
+    </fieldset>
+
+    <!-- EMPLOYER'S INFORMATION -->
+    <fieldset class="section" data-section="Employer's Information">
+      <legend>Employer's Information (if applicable)</legend>
+
+      <div class="inline-question">
+        <span>Were you on the job at the time of accident?</span>
+        <div class="yn"><label><input type="radio" name="bOnJob" value="Yes" data-lbl="On the job at time of accident">Yes</label>
+          <label><input type="radio" name="bOnJob" value="No">No</label></div>
+      </div>
+
+      <div id="bEmployerSection">
+        <div class="subhead">Worker's Comp Information</div>
+        <div class="row">
+          <label class="field"><span class="field-label">Carrier</span>
+            <input type="text" id="bWcCarrier" data-lbl="WC Carrier"></label>
+        </div>
+        <div class="grid2 row">
+          <label class="field"><span class="field-label">Date Employer Notified</span>
+            <input type="date" id="bWcNoticeDate" data-lbl="Date Employer Notified"></label>
+          <label class="field"><span class="field-label">Name</span>
+            <input type="text" id="bWcEmployerName" data-lbl="WC contact name"></label>
+        </div>
+        <div class="grid2 row">
+          <label class="field"><span class="field-label">Employer #1</span>
+            <input type="text" id="bEmployer1Name" data-lbl="Employer #1"></label>
+          <label class="field"><span class="field-label">Type of Work</span>
+            <input type="text" id="bEmployer1Type" data-lbl="Employer #1 type of work"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span class="field-label">Address</span>
+            <input type="text" id="bEmployer1Address" data-lbl="Employer #1 address"></label>
+        </div>
+        <div class="grid3 row">
+          <label class="field"><span class="field-label">Phone</span>
+            <input type="tel" id="bEmployer1Phone" data-lbl="Employer #1 phone"></label>
+          <label class="field"><span class="field-label">Part Time</span>
+            <input type="text" id="bEmployer1PartTime" data-lbl="Employer #1 part time"></label>
+          <label class="field"><span class="field-label">Full Time</span>
+            <input type="text" id="bEmployer1FullTime" data-lbl="Employer #1 full time"></label>
+        </div>
+        <div class="inline-question">
+          <span>Any time lost at work?</span>
+          <div class="yn"><label><input type="radio" name="bEmployer1TimeLost" value="Yes" data-lbl="Time lost at work">Yes</label>
+            <label><input type="radio" name="bEmployer1TimeLost" value="No">No</label></div>
+          <label class="field grow"><span class="field-label">How much?</span>
+            <input type="text" id="bEmployer1HowMuch" data-lbl="How much time lost"></label>
+          <label class="field grow"><span class="field-label">Rate of Pay</span>
+            <input type="text" id="bEmployer1RateOfPay" data-lbl="Rate of pay"></label>
+        </div>
+
+        <div class="grid2 row" style="margin-top:10px;">
+          <label class="field"><span class="field-label">Employer #2</span>
+            <input type="text" id="bEmployer2Name" data-lbl="Employer #2"></label>
+          <label class="field"><span class="field-label">Type of Work</span>
+            <input type="text" id="bEmployer2Type" data-lbl="Employer #2 type of work"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span class="field-label">Address</span>
+            <input type="text" id="bEmployer2Address" data-lbl="Employer #2 address"></label>
+        </div>
+        <div class="grid3 row">
+          <label class="field"><span class="field-label">Phone</span>
+            <input type="tel" id="bEmployer2Phone" data-lbl="Employer #2 phone"></label>
+          <label class="field"><span class="field-label">Part Time</span>
+            <input type="text" id="bEmployer2PartTime" data-lbl="Employer #2 part time"></label>
+          <label class="field"><span class="field-label">Full Time</span>
+            <input type="text" id="bEmployer2FullTime" data-lbl="Employer #2 full time"></label>
+        </div>
+        <div class="inline-question">
+          <span>Any time lost at work?</span>
+          <div class="yn"><label><input type="radio" name="bEmployer2TimeLost" value="Yes" data-lbl="Employer #2 time lost at work">Yes</label>
+            <label><input type="radio" name="bEmployer2TimeLost" value="No">No</label></div>
+          <label class="field grow"><span class="field-label">How much?</span>
+            <input type="text" id="bEmployer2HowMuch" data-lbl="Employer #2 how much time lost"></label>
+          <label class="field grow"><span class="field-label">Rate of Pay</span>
+            <input type="text" id="bEmployer2RateOfPay" data-lbl="Employer #2 rate of pay"></label>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- MEDICAL TREATMENT -->
+    <fieldset class="section" data-section="Medical Treatment">
+      <legend>Medical Treatment</legend>
+
+      <div class="inline-question">
+        <span>Transported by Ambulance?</span>
+        <div class="yn"><label><input type="radio" name="bAmbulance" value="Yes" data-lbl="Transported by ambulance">Yes</label>
+          <label><input type="radio" name="bAmbulance" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">Name of Ambulance Co.</span>
+          <input type="text" id="bAmbulanceCo" data-lbl="Name of Ambulance Co"></label>
+      </div>
+      <div class="inline-question">
+        <span>Were you admitted?</span>
+        <div class="yn"><label><input type="radio" name="bAdmitted" value="Yes" data-lbl="Admitted">Yes</label>
+          <label><input type="radio" name="bAdmitted" value="No">No</label></div>
+        <label class="field grow"><span class="field-label">Length of stay</span>
+          <input type="text" id="bLengthOfStay" data-lbl="Length of stay"></label>
+      </div>
+
+      <div class="subhead">Doctor(s) / Hospital Treated</div>
+      <table class="repeat">
+        <thead><tr><th>Name</th><th>Type of Doctor</th><th>Phone #</th><th>Date of Treatment</th></tr></thead>
+        <tbody id="bDoctorRows"></tbody>
+      </table>
+    </fieldset>
+
+    <!-- INJURIES -->
+    <fieldset class="section" data-section="Injuries">
+      <legend>Injuries</legend>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Describe all parts of the body affected by this accident</span>
+          <textarea id="bInjuryDesc" data-lbl="Body parts affected" rows="3"></textarea></label>
+      </div>
+
+      <div class="subhead">Mark Areas of Pain</div>
+      <p class="hint">Click and drag directly on the diagram below to highlight the injured area(s), exactly as printed on the intake form.</p>
+      <div class="bodymap-frame">
+        <img id="bBodyMapImg" src="berman_bodymap.png" alt="Body diagram for marking areas of injury" draggable="false">
+        <canvas id="bBodyMapCanvas" aria-label="Draw on the body diagram to mark pain"></canvas>
+      </div>
+      <div class="bodymap-controls">
+        <div class="tool-group">
+          <button type="button" class="tool-btn active" id="bToolHighlight" data-tool="highlight">Highlight</button>
+          <button type="button" class="tool-btn" id="bToolErase" data-tool="erase">Eraser</button>
+        </div>
+        <div class="brush-size">
+          <span>Brush</span>
+          <input type="range" id="bBrushSize" min="8" max="40" value="20">
+        </div>
+        <button type="button" class="btn secondary" id="bClearMarkers" style="padding:6px 12px; font-size:.78rem;">Clear highlights</button>
+      </div>
+
+      <div class="subhead" style="margin-top:16px;">10-Point Pain Rating Scale</div>
+      <div class="pain-scale" id="bPainScale"></div>
+
+      <div class="row" style="margin-top:10px;">
+        <label class="field"><span class="field-label">Describe any prior injuries, including dates</span>
+          <textarea id="bPriorInjuries" data-lbl="Prior injuries" rows="2"></textarea></label>
+      </div>
+    </fieldset>
+
+    <!-- PRIOR ATTORNEY -->
+    <fieldset class="section" data-section="Prior Attorney">
+      <legend>Prior Attorney</legend>
+
+      <div class="row">
+        <label class="field"><span class="field-label">Prior attorneys for PI or WC injuries (if applicable)</span>
+          <input type="text" id="bPriorAttorneysList" data-lbl="Prior attorneys list"></label>
+      </div>
+      <div class="inline-question">
+        <span>Represented by an Attorney for this accident?</span>
+        <div class="yn"><label><input type="radio" name="bRepAttorney" value="Yes" data-lbl="Represented by attorney for this accident">Yes</label>
+          <label><input type="radio" name="bRepAttorney" value="No">No</label></div>
+      </div>
+      <div id="bPriorAttyFields">
+        <div class="row">
+          <label class="field"><span class="field-label">Name</span>
+            <input type="text" id="bPriorAttyName" data-lbl="Prior attorney name"></label>
+        </div>
+        <div class="grid2 row">
+          <label class="field"><span class="field-label">Phone</span>
+            <input type="tel" id="bPriorAttyPhone" data-lbl="Prior attorney phone"></label>
+          <label class="field"><span class="field-label">Fax</span>
+            <input type="tel" id="bPriorAttyFax" data-lbl="Prior attorney fax"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span class="field-label">Address</span>
+            <input type="text" id="bPriorAttyAddress" data-lbl="Prior attorney address"></label>
+        </div>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Reason for Termination or Turn Down</span>
+          <input type="text" id="bTerminationReason" data-lbl="Reason for termination/turn down"></label>
+      </div>
+    </fieldset>
+
+    <!-- INSURANCE -->
+    <fieldset class="section" data-section="Insurance Information">
+      <legend>Insurance Information</legend>
+
+      <div class="subhead">Client Automobile Insurance</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Client</span>
+          <input type="text" id="bAutoClient" data-lbl="Client Automobile - Client"></label>
+        <label class="field"><span class="field-label">Insured</span>
+          <input type="text" id="bAutoInsured" data-lbl="Client Automobile - Insured"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Carrier</span>
+          <input type="text" id="bAutoCarrier" data-lbl="Client Automobile - Carrier"></label>
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="bAutoAddress" data-lbl="Client Automobile - Address"></label>
+      </div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="bAutoPhone" data-lbl="Client Automobile - Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span>
+          <input type="text" id="bAutoPolicy" data-lbl="Client Automobile - Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span>
+          <input type="text" id="bAutoClaim" data-lbl="Client Automobile - Claim #"></label>
+        <label class="field"><span class="field-label">Adjuster</span>
+          <input type="text" id="bAutoAdjuster" data-lbl="Client Automobile - Adjuster"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Adjuster Phone</span>
+          <input type="tel" id="bAutoAdjusterPhone" data-lbl="Client Automobile - Adjuster Phone"></label>
+      </div>
+
+      <div class="subhead">Host Vehicle Insurance</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Owner</span>
+          <input type="text" id="bHostOwner" data-lbl="Host Vehicle - Owner"></label>
+        <label class="field"><span class="field-label">Owner Phone</span>
+          <input type="tel" id="bHostOwnerPhone" data-lbl="Host Vehicle - Owner Phone"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Carrier</span>
+          <input type="text" id="bHostCarrier" data-lbl="Host Vehicle - Carrier"></label>
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="bHostAddress" data-lbl="Host Vehicle - Address"></label>
+      </div>
+      <div class="grid4 row">
+        <label class="field"><span class="field-label">Carrier Phone</span>
+          <input type="tel" id="bHostCarrierPhone" data-lbl="Host Vehicle - Carrier Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span>
+          <input type="text" id="bHostPolicy" data-lbl="Host Vehicle - Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span>
+          <input type="text" id="bHostClaim" data-lbl="Host Vehicle - Claim #"></label>
+        <label class="field"><span class="field-label">Adjuster</span>
+          <input type="text" id="bHostAdjuster" data-lbl="Host Vehicle - Adjuster"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Adjuster Phone</span>
+          <input type="tel" id="bHostAdjusterPhone" data-lbl="Host Vehicle - Adjuster Phone"></label>
+      </div>
+
+      <div class="subhead">Client Health Insurance</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Carrier</span>
+          <input type="text" id="bHealthCarrier" data-lbl="Client Health Insurance - Carrier"></label>
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="bHealthPhone" data-lbl="Client Health Insurance - Phone"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Group #</span>
+          <input type="text" id="bHealthGroup" data-lbl="Client Health Insurance - Group #"></label>
+        <label class="field"><span class="field-label">ID #</span>
+          <input type="text" id="bHealthId" data-lbl="Client Health Insurance - ID #"></label>
+      </div>
+      <div class="grid2 row">
+        <div class="field yn-field"><span class="field-label">Medicare</span>
+          <div class="check-row">
+            <label><input type="radio" name="bMedicare" value="Yes" data-lbl="Medicare">Yes</label>
+            <label><input type="radio" name="bMedicare" value="No">No</label>
+          </div>
+          <input type="text" id="bHealthMedicareNum" placeholder="Medicare #" data-lbl="Medicare #" style="margin-top:6px;"></div>
+        <div class="field yn-field"><span class="field-label">Medicaid</span>
+          <div class="check-row">
+            <label><input type="radio" name="bMedicaid" value="Yes" data-lbl="Medicaid">Yes</label>
+            <label><input type="radio" name="bMedicaid" value="No">No</label>
+          </div>
+          <input type="text" id="bHealthMedicaidNum" placeholder="Medicaid #" data-lbl="Medicaid #" style="margin-top:6px;"></div>
+      </div>
+
+      <div class="subhead">Defendant Information</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Driver Name</span>
+          <input type="text" id="bDefDriverName" data-lbl="Defendant - Driver Name"></label>
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="bDefDriverPhone" data-lbl="Defendant - Driver Phone"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="bDefDriverAddress" data-lbl="Defendant - Driver Address"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Carrier</span>
+          <input type="text" id="bDefCarrier" data-lbl="Defendant - Carrier"></label>
+        <label class="field"><span class="field-label">Carrier Address</span>
+          <input type="text" id="bDefCarrierAddress" data-lbl="Defendant - Carrier Address"></label>
+      </div>
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Carrier Phone</span>
+          <input type="tel" id="bDefCarrierPhone" data-lbl="Defendant - Carrier Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span>
+          <input type="text" id="bDefPolicy" data-lbl="Defendant - Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span>
+          <input type="text" id="bDefClaim" data-lbl="Defendant - Claim #"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Adjuster</span>
+          <input type="text" id="bDefAdjuster" data-lbl="Defendant - Adjuster"></label>
+        <label class="field"><span class="field-label">Adjuster Phone</span>
+          <input type="tel" id="bDefAdjusterPhone" data-lbl="Defendant - Adjuster Phone"></label>
+      </div>
+
+      <div class="subhead">Vehicle Owner (if different from driver)</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Owner Name</span>
+          <input type="text" id="bDefOwnerName" data-lbl="Defendant - Owner Name"></label>
+        <label class="field"><span class="field-label">Owner Phone</span>
+          <input type="tel" id="bDefOwnerPhone" data-lbl="Defendant - Owner Phone"></label>
+      </div>
+      <div class="row">
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="bDefOwnerAddress" data-lbl="Defendant - Owner Address"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Carrier</span>
+          <input type="text" id="bDefOwnerCarrier" data-lbl="Defendant - Owner Carrier"></label>
+        <label class="field"><span class="field-label">Carrier Address</span>
+          <input type="text" id="bDefOwnerCarrierAddress" data-lbl="Defendant - Owner Carrier Address"></label>
+      </div>
+      <div class="grid3 row">
+        <label class="field"><span class="field-label">Carrier Phone</span>
+          <input type="tel" id="bDefOwnerCarrierPhone" data-lbl="Defendant - Owner Carrier Phone"></label>
+        <label class="field"><span class="field-label">Policy #</span>
+          <input type="text" id="bDefOwnerPolicy" data-lbl="Defendant - Owner Policy #"></label>
+        <label class="field"><span class="field-label">Claim #</span>
+          <input type="text" id="bDefOwnerClaim" data-lbl="Defendant - Owner Claim #"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Adjuster</span>
+          <input type="text" id="bDefOwnerAdjuster" data-lbl="Defendant - Owner Adjuster"></label>
+        <label class="field"><span class="field-label">Adjuster Phone</span>
+          <input type="tel" id="bDefOwnerAdjusterPhone" data-lbl="Defendant - Owner Adjuster Phone"></label>
+      </div>
+
+      <div class="subhead">Has a Written or Recorded Statement Been Given to Anyone?</div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span>
+          <input type="text" id="bStatement1Name" data-lbl="Statement given - Name"></label>
+        <label class="field"><span class="field-label">Ins. Co.</span>
+          <input type="text" id="bStatement1InsCo" data-lbl="Statement given - Ins Co"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span>
+          <input type="text" id="bStatement2Name" data-lbl="Statement given #2 - Name"></label>
+        <label class="field"><span class="field-label">Ins. Co.</span>
+          <input type="text" id="bStatement2InsCo" data-lbl="Statement given #2 - Ins Co"></label>
+      </div>
+    </fieldset>
+
+    <!-- EMERGENCY CONTACT -->
+    <fieldset class="section" data-section="Emergency Contact">
+      <legend>Emergency Contact</legend>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Name</span>
+          <input type="text" id="bEcName" data-lbl="Emergency Contact Name"></label>
+        <label class="field"><span class="field-label">Relationship</span>
+          <input type="text" id="bEcRelationship" data-lbl="Emergency Contact Relationship"></label>
+      </div>
+      <div class="grid2 row">
+        <label class="field"><span class="field-label">Address</span>
+          <input type="text" id="bEcAddress" data-lbl="Emergency Contact Address"></label>
+        <label class="field"><span class="field-label">Phone</span>
+          <input type="tel" id="bEcPhone" data-lbl="Emergency Contact Phone"></label>
+      </div>
+      <div class="inline-question">
+        <span>Do you want information on getting money now from pre-settlement funding?</span>
+        <div class="yn"><label><input type="radio" name="bPresettlement" value="Yes" data-lbl="Wants pre-settlement funding info">Yes</label>
+          <label><input type="radio" name="bPresettlement" value="No">No</label></div>
+      </div>
+    </fieldset>
+
+    <!-- ADDITIONAL COMMENTS -->
+    <fieldset class="section" data-section="Additional Comments">
+      <legend>Additional Comments or Information</legend>
+      <div class="row">
+        <textarea id="bAdditionalComments" data-lbl="Additional comments" rows="5"></textarea>
+      </div>
+    </fieldset>
+
+  </div>
+  </form>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="pdf-data.js"></script>
+<script src="pdf-data-berman.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var US_STATES = ["AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"];
+  var RELATIONSHIPS = ["Spouse","Parent","Child","Sibling","Grandparent","Friend","Other"];
+  var SOCIAL = ["Facebook","Instagram","X (Twitter)","TikTok","LinkedIn","Snapchat","YouTube","Other"];
+  var PAIN_LABELS = ["No Pain","Very Mild","Mild","Slightly Mild","Moderate","Slightly Severe","Severe","Very Severe","Extremely Severe","Intense","Unbearable"];
+
+  function fillSelect(id, opts, placeholder){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var html = '<option value="">' + (placeholder || "--Select--") + '</option>';
+    opts.forEach(function(o){ html += '<option>' + o + '</option>'; });
+    el.innerHTML = html;
+  }
+  fillSelect("accState", US_STATES);
+  fillSelect("relativeRel", RELATIONSHIPS);
+  fillSelect("ecRel", RELATIONSHIPS);
+
+  // ---- repeating rows: social media ----
+  var smWrap = document.getElementById("socialMediaRows");
+  for(var i=1;i<=3;i++){
+    var row = document.createElement("div");
+    row.className = "grid2 row";
+    var selId = "sm"+i+"Platform", userId = "sm"+i+"User";
+    row.innerHTML =
+      '<label class="field"><span class="field-label">Platform</span><select id="'+selId+'" data-lbl="Social Media #'+i+' Platform">'+
+        '<option value="">--Select--</option>'+ SOCIAL.map(function(s){return '<option>'+s+'</option>';}).join('') +
+      '</select></label>'+
+      '<label class="field"><span class="field-label">Username</span><input type="text" id="'+userId+'" data-lbl="Social Media #'+i+' Username"></label>';
+    smWrap.appendChild(row);
+  }
+
+  // ---- repeating rows: companions ----
+  var compWrap = document.getElementById("companionRows");
+  for(var c=1;c<=5;c++){
+    var crow = document.createElement("div");
+    crow.className = "inline-question";
+    var nameId = "comp"+c+"Name";
+    crow.innerHTML =
+      '<label class="field grow"><span class="field-label">Companion #'+c+' Name</span><input type="text" id="'+nameId+'" data-lbl="Companion #'+c+' Name"></label>'+
+      '<span>Signing?</span>'+
+      '<div class="yn"><label><input type="radio" name="comp'+c+'Signing" value="Yes" data-lbl="Companion #'+c+' Signing">Yes</label>'+
+      '<label><input type="radio" name="comp'+c+'Signing" value="No">No</label></div>';
+    compWrap.appendChild(crow);
+  }
+
+  // ---- repeating rows: doctors ----
+  var docWrap = document.getElementById("doctorRows");
+  for(var d=1; d<=5; d++){
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td><input type="text" id="doc'+d+'Name" data-lbl="Doctor/Hospital #'+d+' Name"></td>'+
+      '<td><input type="text" id="doc'+d+'Type" data-lbl="Doctor/Hospital #'+d+' Type of Doctor"></td>'+
+      '<td><input type="tel" id="doc'+d+'Phone" data-lbl="Doctor/Hospital #'+d+' Phone"></td>'+
+      '<td><input type="date" id="doc'+d+'Date" data-lbl="Doctor/Hospital #'+d+' Date of Treatment"></td>';
+    docWrap.appendChild(tr);
+  }
+
+  // ---- pain scale 0-10 ----
+  var painWrap = document.getElementById("painScale");
+  for(var p=0;p<=10;p++){
+    var lbl = document.createElement("label");
+    lbl.className = "pain-btn";
+    lbl.innerHTML = '<input type="radio" name="painScale" value="'+p+'" data-lbl="Pain Scale (0-10)"><strong>'+p+'</strong><span>'+PAIN_LABELS[p]+'</span>';
+    lbl.querySelector("input").addEventListener("change", function(){
+      document.querySelectorAll(".pain-btn").forEach(function(b){ b.classList.remove("on"); });
+      this.closest(".pain-btn").classList.add("on");
+    });
+    painWrap.appendChild(lbl);
+  }
+
+  // ---- body map: highlight directly on the real diagram image ----
+  var bodyImg = document.getElementById("bodyMapImg");
+  var bodyCanvas = document.getElementById("bodyMapCanvas");
+  var bodyCtx = bodyCanvas.getContext("2d");
+  var bmTool = "highlight";
+  var bmDrawing = false;
+  var bmLast = null;
+
+  function sizeBodyCanvas(){
+    // internal drawing buffer matches the source image's native pixels (978x714),
+    // so a highlight lines up exactly with the same region when re-drawn into the PDF.
+    var w = bodyImg.naturalWidth || 978;
+    var h = bodyImg.naturalHeight || 714;
+    if(bodyCanvas.width !== w || bodyCanvas.height !== h){
+      var prev = bodyCanvas.width ? bodyCtx.getImageData(0,0,bodyCanvas.width,bodyCanvas.height) : null;
+      bodyCanvas.width = w;
+      bodyCanvas.height = h;
+      if(prev) bodyCtx.putImageData(prev, 0, 0);
+    }
+  }
+  if(bodyImg.complete && bodyImg.naturalWidth){ sizeBodyCanvas(); }
+  bodyImg.addEventListener("load", sizeBodyCanvas);
+
+  function bodyPos(e){
+    var rect = bodyCanvas.getBoundingClientRect();
+    var scaleX = bodyCanvas.width / rect.width;
+    var scaleY = bodyCanvas.height / rect.height;
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+  }
+  function bodyStroke(from, to){
+    var size = parseInt(document.getElementById("brushSize").value, 10) || 20;
+    bodyCtx.lineCap = "round";
+    bodyCtx.lineJoin = "round";
+    bodyCtx.lineWidth = size;
+    if(bmTool === "erase"){
+      bodyCtx.globalCompositeOperation = "destination-out";
+      bodyCtx.strokeStyle = "rgba(0,0,0,1)";
+      bodyCtx.fillStyle = "rgba(0,0,0,1)";
+    } else {
+      bodyCtx.globalCompositeOperation = "source-over";
+      bodyCtx.strokeStyle = "rgba(37, 99, 235, 0.3)";
+      bodyCtx.fillStyle = "rgba(37, 99, 235, 0.3)";
+    }
+    bodyCtx.beginPath();
+    bodyCtx.moveTo(from.x, from.y);
+    bodyCtx.lineTo(to.x, to.y);
+    bodyCtx.stroke();
+    // dot at the start so a simple tap still leaves a mark
+    bodyCtx.beginPath();
+    bodyCtx.arc(from.x, from.y, size/2, 0, Math.PI*2);
+    bodyCtx.fill();
+  }
+  bodyCanvas.addEventListener("pointerdown", function(e){
+    sizeBodyCanvas();
+    bmDrawing = true;
+    bodyCanvas.setPointerCapture(e.pointerId);
+    bmLast = bodyPos(e);
+    bodyStroke(bmLast, bmLast);
+    dirty = true; statusLine.textContent = "Draft — unsaved changes";
+  });
+  bodyCanvas.addEventListener("pointermove", function(e){
+    if(!bmDrawing) return;
+    var pos = bodyPos(e);
+    bodyStroke(bmLast, pos);
+    bmLast = pos;
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(function(ev){
+    bodyCanvas.addEventListener(ev, function(){ bmDrawing = false; bmLast = null; });
+  });
+  document.getElementById("toolHighlight").addEventListener("click", function(){
+    bmTool = "highlight";
+    document.getElementById("toolHighlight").classList.add("active");
+    document.getElementById("toolErase").classList.remove("active");
+  });
+  document.getElementById("toolErase").addEventListener("click", function(){
+    bmTool = "erase";
+    document.getElementById("toolErase").classList.add("active");
+    document.getElementById("toolHighlight").classList.remove("active");
+  });
+  document.getElementById("clearMarkers").addEventListener("click", function(){
+    bodyCtx.clearRect(0, 0, bodyCanvas.width, bodyCanvas.height);
+  });
+
+  // ---- "Were you on the job?" No -> auto-fill Employer & Workers' Comp section ----
+  var employerSection = document.getElementById("employerSection");
+  function setEmployerNotApplicable(isNo){
+    if(!employerSection) return;
+    var fields = employerSection.querySelectorAll('input[type="text"], input[type="tel"], input[type="date"]');
+    fields.forEach(function(el){
+      if(isNo){
+        if(el.type === "date"){ el.dataset.wasDate = "1"; el.type = "text"; }
+        el.value = "N/A";
+        el.disabled = true;
+      } else if(el.disabled && el.value === "N/A"){
+        el.disabled = false;
+        el.value = "";
+        if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
+      }
+    });
+    var radioNames = {};
+    employerSection.querySelectorAll('input[type="radio"]').forEach(function(r){
+      if(r.name !== "onJob") radioNames[r.name] = true;
+    });
+    Object.keys(radioNames).forEach(function(name){
+      var noOpt = employerSection.querySelector('input[name="'+name+'"][value="No"]');
+      var yesOpt = employerSection.querySelector('input[name="'+name+'"][value="Yes"]');
+      if(isNo){
+        if(noOpt) noOpt.checked = true;
+        if(yesOpt) yesOpt.disabled = true;
+        if(noOpt) noOpt.disabled = true;
+      } else {
+        if(yesOpt) yesOpt.disabled = false;
+        if(noOpt) noOpt.disabled = false;
+      }
+    });
+  }
+
+  // ---- generic helper: lock a field to a placeholder value, or release it ----
+  function ensureOption(select, text){
+    var existing = Array.prototype.slice.call(select.options).filter(function(o){ return o.value === text; })[0];
+    if(!existing){
+      existing = document.createElement("option");
+      existing.value = text; existing.textContent = text;
+      existing.dataset.injected = "1";
+      select.appendChild(existing);
+    }
+    return existing;
+  }
+  function setFieldPlaceholder(el, lock, text){
+    text = text || "N/A";
+    if(!el) return;
+    if(el.tagName === "SELECT"){
+      if(lock){
+        ensureOption(el, text);
+        el.value = text;
+        el.disabled = true;
+      } else if(el.disabled){
+        el.disabled = false;
+        if(el.value === text){
+          el.value = "";
+          var injected = el.querySelector('option[data-injected="1"][value="'+text+'"]');
+          if(injected) injected.remove();
+        }
+      }
+    } else {
+      if(lock){
+        if(el.type === "date"){ el.dataset.wasDate = "1"; el.type = "text"; }
+        el.value = text;
+        el.disabled = true;
+      } else if(el.disabled && el.value === text){
+        el.value = "";
+        el.disabled = false;
+        if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
+      }
+    }
+  }
+
+  // ---- Minor: No -> Mother/Father are N/A ----
+  document.querySelectorAll('input[name="minor"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var lock = this.value === "No";
+      setFieldPlaceholder(document.getElementById("cMother"), lock);
+      setFieldPlaceholder(document.getElementById("cFather"), lock);
+    });
+  });
+
+  // ---- Marital Status: Single/Divorced/Widowed -> Spouse's Name is N/A ----
+  document.getElementById("cMarital").addEventListener("change", function(){
+    var lock = ["Single","Divorced","Widowed"].indexOf(this.value) !== -1;
+    setFieldPlaceholder(document.getElementById("cSpouse"), lock);
+  });
+
+  // ---- Lives with a relative who owns a vehicle: No -> those fields are N/A ----
+  var relativeVehicleFields = document.getElementById("relativeVehicleFields");
+  document.querySelectorAll('input[name="relativeVehicle"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var lock = this.value === "No";
+      relativeVehicleFields.querySelectorAll("input, select").forEach(function(el){
+        setFieldPlaceholder(el, lock);
+      });
+    });
+  });
+
+  // ---- Transported by ambulance: No -> Ambulance Co. is N/A ----
+  document.querySelectorAll('input[name="ambulance"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      setFieldPlaceholder(document.getElementById("ambulanceName"), this.value === "No");
+    });
+  });
+
+  // ---- Represented by an attorney for this accident: No -> Prior Attorney fields are N/A ----
+  var attyFieldIds = ["attyName","attyPhone","attyFax","attyAddr","attyReason"];
+  document.querySelectorAll('input[name="reprAtty"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var lock = this.value === "No";
+      attyFieldIds.forEach(function(id){ setFieldPlaceholder(document.getElementById(id), lock); });
+    });
+  });
+
+  // ---- Client Health Insurance "Waiting on Information" -> those fields say Not Provided ----
+  var chiFieldIds = ["chiCarrier","chiPhone","chiGroup","chiId","medicareNum","medicaidNum"];
+  document.getElementById("chiWaiting").addEventListener("change", function(){
+    var lock = this.checked;
+    chiFieldIds.forEach(function(id){ setFieldPlaceholder(document.getElementById(id), lock, "Not Provided"); });
+  });
+
+
+  // ================= BERMAN LAW GROUP FORM =================
+
+  // reuse the same Place of Birth option list built for the 10X form
+  (function(){
+    var src = document.getElementById("cPob");
+    var dst = document.getElementById("bPob");
+    if(src && dst) dst.innerHTML = src.innerHTML;
+  })();
+
+  // ---- social media rows (3) ----
+  (function(){
+    var wrap = document.getElementById("bSocialMediaRows");
+    if(!wrap) return;
+    for(var s=1;s<=3;s++){
+      var row = document.createElement("div");
+      row.className = "grid2 row";
+      row.innerHTML =
+        '<label class="field"><span class="field-label">Social Media Name #'+s+'</span><input type="text" id="bSm'+s+'Name" data-lbl="Social Media #'+s+' Name"></label>'+
+        '<label class="field"><span class="field-label">Username #'+s+'</span><input type="text" id="bSm'+s+'User" data-lbl="Social Media #'+s+' Username"></label>';
+      wrap.appendChild(row);
+    }
+  })();
+
+  // ---- doctor/hospital rows (5) ----
+  (function(){
+    var wrap = document.getElementById("bDoctorRows");
+    if(!wrap) return;
+    for(var d=1; d<=5; d++){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><input type="text" id="bDoc'+d+'Name" data-lbl="Doctor/Hospital #'+d+' Name"></td>'+
+        '<td><input type="text" id="bDoc'+d+'Type" data-lbl="Doctor/Hospital #'+d+' Type of Doctor"></td>'+
+        '<td><input type="tel" id="bDoc'+d+'Phone" data-lbl="Doctor/Hospital #'+d+' Phone"></td>'+
+        '<td><input type="date" id="bDoc'+d+'Date" data-lbl="Doctor/Hospital #'+d+' Date of Treatment"></td>';
+      wrap.appendChild(tr);
+    }
+  })();
+
+  // ---- pain scale 0-10 ----
+  (function(){
+    var wrap = document.getElementById("bPainScale");
+    if(!wrap) return;
+    for(var p=0;p<=10;p++){
+      var lbl = document.createElement("label");
+      lbl.className = "pain-btn";
+      lbl.innerHTML = '<input type="radio" name="bPainScale" value="'+p+'" data-lbl="Pain Scale (0-10)"><strong>'+p+'</strong><span>'+PAIN_LABELS[p]+'</span>';
+      lbl.querySelector("input").addEventListener("change", function(){
+        wrap.querySelectorAll(".pain-btn").forEach(function(b){ b.classList.remove("on"); });
+        this.closest(".pain-btn").classList.add("on");
+      });
+      wrap.appendChild(lbl);
+    }
+  })();
+
+  // ---- body map: highlight directly on the real diagram image ----
+  var bBodyImg = document.getElementById("bBodyMapImg");
+  var bBodyCanvas = document.getElementById("bBodyMapCanvas");
+  var bBodyCtx = bBodyCanvas.getContext("2d");
+  var bBmTool = "highlight";
+  var bBmDrawing = false;
+  var bBmLast = null;
+
+  function bSizeBodyCanvas(){
+    var w = bBodyImg.naturalWidth || 978;
+    var h = bBodyImg.naturalHeight || 714;
+    if(bBodyCanvas.width !== w || bBodyCanvas.height !== h){
+      var prev = bBodyCanvas.width ? bBodyCtx.getImageData(0,0,bBodyCanvas.width,bBodyCanvas.height) : null;
+      bBodyCanvas.width = w;
+      bBodyCanvas.height = h;
+      if(prev) bBodyCtx.putImageData(prev, 0, 0);
+    }
+  }
+  if(bBodyImg.complete && bBodyImg.naturalWidth){ bSizeBodyCanvas(); }
+  bBodyImg.addEventListener("load", bSizeBodyCanvas);
+
+  function bBodyPos(e){
+    var rect = bBodyCanvas.getBoundingClientRect();
+    var scaleX = bBodyCanvas.width / rect.width;
+    var scaleY = bBodyCanvas.height / rect.height;
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+  }
+  function bBodyStroke(from, to){
+    var size = parseInt(document.getElementById("bBrushSize").value, 10) || 20;
+    bBodyCtx.lineCap = "round";
+    bBodyCtx.lineJoin = "round";
+    bBodyCtx.lineWidth = size;
+    if(bBmTool === "erase"){
+      bBodyCtx.globalCompositeOperation = "destination-out";
+      bBodyCtx.strokeStyle = "rgba(0,0,0,1)";
+      bBodyCtx.fillStyle = "rgba(0,0,0,1)";
+    } else {
+      bBodyCtx.globalCompositeOperation = "source-over";
+      bBodyCtx.strokeStyle = "rgba(37, 99, 235, 0.3)";
+      bBodyCtx.fillStyle = "rgba(37, 99, 235, 0.3)";
+    }
+    bBodyCtx.beginPath();
+    bBodyCtx.moveTo(from.x, from.y);
+    bBodyCtx.lineTo(to.x, to.y);
+    bBodyCtx.stroke();
+    bBodyCtx.beginPath();
+    bBodyCtx.arc(from.x, from.y, size/2, 0, Math.PI*2);
+    bBodyCtx.fill();
+  }
+  bBodyCanvas.addEventListener("pointerdown", function(e){
+    bSizeBodyCanvas();
+    bBmDrawing = true;
+    bBodyCanvas.setPointerCapture(e.pointerId);
+    bBmLast = bBodyPos(e);
+    bBodyStroke(bBmLast, bBmLast);
+    dirty = true; statusLine.textContent = "Draft — unsaved changes";
+  });
+  bBodyCanvas.addEventListener("pointermove", function(e){
+    if(!bBmDrawing) return;
+    var pos = bBodyPos(e);
+    bBodyStroke(bBmLast, pos);
+    bBmLast = pos;
+  });
+  ["pointerup","pointercancel","pointerleave"].forEach(function(ev){
+    bBodyCanvas.addEventListener(ev, function(){ bBmDrawing = false; bBmLast = null; });
+  });
+  document.getElementById("bToolHighlight").addEventListener("click", function(){
+    bBmTool = "highlight";
+    document.getElementById("bToolHighlight").classList.add("active");
+    document.getElementById("bToolErase").classList.remove("active");
+  });
+  document.getElementById("bToolErase").addEventListener("click", function(){
+    bBmTool = "erase";
+    document.getElementById("bToolErase").classList.add("active");
+    document.getElementById("bToolHighlight").classList.remove("active");
+  });
+  document.getElementById("bClearMarkers").addEventListener("click", function(){
+    bBodyCtx.clearRect(0, 0, bBodyCanvas.width, bBodyCanvas.height);
+  });
+
+  // ---- "Were you on the job?" No -> N/A the Employer & Workers' Comp section ----
+  var bEmployerSection = document.getElementById("bEmployerSection");
+  function setBermanEmployerNotApplicable(isNo){
+    if(!bEmployerSection) return;
+    var fields = bEmployerSection.querySelectorAll('input[type="text"], input[type="tel"], input[type="date"]');
+    fields.forEach(function(el){
+      if(isNo){
+        if(el.type === "date"){ el.dataset.wasDate = "1"; el.type = "text"; }
+        el.value = "N/A";
+        el.disabled = true;
+      } else if(el.disabled && el.value === "N/A"){
+        el.disabled = false;
+        el.value = "";
+        if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
+      }
+    });
+    bEmployerSection.querySelectorAll('input[type="radio"]').forEach(function(r){
+      if(isNo){ r.disabled = true; if(r.value === "No") r.checked = true; }
+      else { r.disabled = false; }
+    });
+  }
+  document.querySelectorAll('input[name="bOnJob"]').forEach(function(r){
+    r.addEventListener("change", function(){ setBermanEmployerNotApplicable(this.value === "No"); });
+  });
+
+  // ---- Minor: No -> Mother/Father N/A ----
+  document.querySelectorAll('input[name="bMinor"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var isNo = this.value === "No";
+      setFieldPlaceholder(document.getElementById("bMother"), isNo, "N/A");
+      setFieldPlaceholder(document.getElementById("bFather"), isNo, "N/A");
+    });
+  });
+
+  // ---- Marital Status: Single/Divorced/Widowed -> Spouse's Name N/A ----
+  document.getElementById("bMaritalStatus").addEventListener("change", function(){
+    var lock = ["Single","Divorced","Widowed"].indexOf(this.value) !== -1;
+    setFieldPlaceholder(document.getElementById("bSpouseName"), lock, "N/A");
+  });
+
+  // ---- relative-owned vehicle: No -> N/A the vehicle detail block ----
+  var bRelativeVehicleFields = document.getElementById("bRelativeVehicleFields");
+  document.querySelectorAll('input[name="bRelativeVehicle"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var isNo = this.value === "No";
+      bRelativeVehicleFields.querySelectorAll("input").forEach(function(el){
+        setFieldPlaceholder(el, isNo, "N/A");
+      });
+    });
+  });
+
+  // ---- ambulance: No -> Name of Ambulance Co N/A ----
+  document.querySelectorAll('input[name="bAmbulance"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      setFieldPlaceholder(document.getElementById("bAmbulanceCo"), this.value === "No", "N/A");
+    });
+  });
+
+  // ---- represented by attorney: No -> Prior Attorney fields N/A ----
+  var bPriorAttyFields = document.getElementById("bPriorAttyFields");
+  document.querySelectorAll('input[name="bRepAttorney"]').forEach(function(r){
+    r.addEventListener("change", function(){
+      var isNo = this.value === "No";
+      bPriorAttyFields.querySelectorAll("input").forEach(function(el){
+        setFieldPlaceholder(el, isNo, "N/A");
+      });
+    });
+  });
+
+  // ================= BERMAN PDF FILL =================
+  function base64ToBytesB(b64){
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  async function buildFilledPdfBerman(){
+    var map = window.PDF_FIELD_MAP_BERMAN;
+    var bytes = base64ToBytesB(window.TEMPLATE_PDF_BASE64_BERMAN);
+    var pdfDoc = await PDFLib.PDFDocument.load(bytes);
+    var pages = pdfDoc.getPages();
+    var font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var ink = PDFLib.rgb(0.09, 0.09, 0.12);
+
+    function pageOf(n){ return pages[n-1]; }
+
+    function fitSize(text, maxWidth, startSize){
+      var size = startSize;
+      while(size > 5.5 && font.widthOfTextAtSize(text, size) > maxWidth) size -= 0.5;
+      return size;
+    }
+    function drawSingle(loc, text){
+      if(!text) return;
+      var size = fitSize(text, loc.w, 8.5);
+      if(font.widthOfTextAtSize(text, size) > loc.w){
+        while(text.length > 1 && font.widthOfTextAtSize(text+"…", size) > loc.w){
+          text = text.slice(0, -1);
+        }
+        text = text + "…";
+      }
+      pageOf(loc.page).drawText(text, { x: loc.x, y: loc.y, size: size, font: font, color: ink });
+    }
+    function drawCheck(loc){
+      if(!loc) return;
+      pageOf(loc.page).drawText("X", { x: loc.x, y: loc.y, size: 9, font: font, color: ink });
+    }
+    function wrapToSlots(text, locs, size){
+      var paragraphs = (text || "").split(/\r?\n/);
+      var words = [];
+      paragraphs.forEach(function(p, i){
+        if(i > 0) words.push("\n");
+        p.split(/\s+/).forEach(function(w){ if(w) words.push(w); });
+      });
+      var lines = [];
+      var slot = 0;
+      var cur = "";
+      for(var i=0;i<words.length && slot < locs.length;i++){
+        if(words[i] === "\n"){
+          lines.push(cur); slot++;
+          cur = slot < locs.length ? "" : cur;
+          continue;
+        }
+        var widthAvail = locs[slot].w;
+        var trial = cur ? cur + " " + words[i] : words[i];
+        if(!cur || font.widthOfTextAtSize(trial, size) <= widthAvail){
+          cur = trial;
+        } else {
+          lines.push(cur); slot++;
+          cur = slot < locs.length ? words[i] : cur;
+        }
+      }
+      if(slot < locs.length) lines.push(cur);
+      var lastIdx = lines.length - 1;
+      if(lastIdx >= 0){
+        var last = lines[lastIdx];
+        var lastW = locs[lastIdx].w;
+        while(last.length > 1 && font.widthOfTextAtSize(last, size) > lastW) last = last.slice(0, -1);
+        lines[lastIdx] = last;
+      }
+      return lines;
+    }
+    function drawMulti(locs, text){
+      if(!text || !locs || !locs.length) return;
+      var size = 8.5;
+      var fits = false;
+      while(size > 5.5 && !fits){
+        var probe = wrapToSlots(text, locs, size);
+        fits = probe.length <= locs.length;
+        if(!fits) size -= 0.5;
+      }
+      var lines = wrapToSlots(text, locs, size);
+      if(lines.length > locs.length){
+        lines = lines.slice(0, locs.length);
+        var lastIdx = locs.length - 1;
+        var lastW = locs[lastIdx].w;
+        var last = lines[lastIdx];
+        while(last.length > 1 && font.widthOfTextAtSize(last + "…", size) > lastW) last = last.slice(0, -1);
+        lines[lastIdx] = last.replace(/\s+$/, "") + "…";
+      }
+      for(var li = 0; li < lines.length; li++){
+        pageOf(locs[li].page).drawText(lines[li], { x: locs[li].x, y: locs[li].y, size: size, font: font, color: ink });
+      }
+    }
+
+    // simple text fields
+    Object.keys(map.text).forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      var val = valueOf(el);
+      // this template already prints "(____)" for every phone/fax blank, so
+      // drop our own parentheses rather than draw a doubled-up "((305) ...)"
+      if(el.type === "tel") val = val.replace(/[()]/g, "").trim();
+      drawSingle(map.text[id], val);
+    });
+
+    // City/State share the address continuation blank on this template
+    var bCityVal = valueOf(document.getElementById("bCity"));
+    var bStateVal = valueOf(document.getElementById("bState"));
+    var bCityState = [bCityVal, bStateVal].filter(Boolean).join(", ");
+    if(bCityState) drawSingle(map.text.bAddress2, bCityState);
+
+    // Y/N radio groups
+    Object.keys(map.yn).forEach(function(name){
+      var v = radioValue(name);
+      var entry = map.yn[name];
+      if(v && entry.options[v]) drawCheck({ page: entry.page, x: entry.options[v].x, y: entry.options[v].y });
+    });
+
+    // gender (blank-line mark)
+    var genderV = radioValue("bGender");
+    if(genderV && map.gender.options[genderV]){
+      drawCheck({ page: map.gender.page, x: map.gender.options[genderV].x, y: map.gender.options[genderV].y });
+    }
+
+    // case type: A/A, S/F checkmarks, or free text for Other
+    var caseTypeV = radioValue("bCaseType");
+    if(caseTypeV === "AA") drawCheck({ page: map.caseType.page, x: map.caseType.AA.x, y: map.caseType.AA.y });
+    else if(caseTypeV === "SF") drawCheck({ page: map.caseType.page, x: map.caseType.SF.x, y: map.caseType.SF.y });
+
+    // seat location of client (mark on the matching blank line)
+    var seatV = radioValue("bSeatLocation");
+    if(seatV && map.seatLocation[seatV]){
+      drawCheck({ page: map.seatLocation.page, x: map.seatLocation[seatV].x, y: map.seatLocation[seatV].y });
+    }
+
+    // AM/PM derived from the accident time field
+    var bt = document.getElementById("bAccTime");
+    if(bt && bt.value){
+      var hh = parseInt(bt.value.split(":")[0], 10);
+      var period = hh < 12 ? "AM" : "PM";
+      var e = map.ampm.options ? map.ampm.options[period] : map.ampm[period];
+      if(e) drawCheck({ page: map.ampm.page, x: e.x, y: e.y });
+    }
+
+    // pain scale (mark under the chosen number)
+    var painV = radioValue("bPainScale");
+    if(painV !== "" && map.pain[painV] !== undefined){
+      drawCheck({ page: map.pain.page, x: map.pain[painV].x, y: map.pain[painV].y });
+    }
+
+    // doctor/hospital table
+    for(var d=1; d<=5; d++){
+      var row = map.doctorRows[d];
+      var vals = {
+        name: valueOf(document.getElementById("bDoc"+d+"Name")),
+        type: valueOf(document.getElementById("bDoc"+d+"Type")),
+        phone: valueOf(document.getElementById("bDoc"+d+"Phone")),
+        date: valueOf(document.getElementById("bDoc"+d+"Date"))
+      };
+      Object.keys(vals).forEach(function(k){
+        if(!vals[k]) return;
+        var x = row.x[k];
+        var w = k === "name" ? 100 : (k === "type" ? 55 : (k === "phone" ? 50 : 65));
+        drawSingle({page: 3, x:x, y:row.y, w:w}, vals[k]);
+      });
+    }
+
+    // multi-line text areas
+    drawMulti(map.multiline.bAccDesc, valueOf(document.getElementById("bAccDesc")));
+    drawMulti(map.multiline.bInjuryDesc, valueOf(document.getElementById("bInjuryDesc")));
+    drawMulti(map.multiline.bPriorInjuries, valueOf(document.getElementById("bPriorInjuries")));
+    drawMulti(map.multiline.bAdditionalComments, valueOf(document.getElementById("bAdditionalComments")));
+
+    // body-map highlights
+    var bm = map.bodyMapImage;
+    var bmDataUrl = bBodyCanvas.toDataURL("image/png");
+    var bmBytes = base64ToBytesB(bmDataUrl.split(",")[1]);
+    var bmImage = await pdfDoc.embedPng(bmBytes);
+    pageOf(bm.page).drawImage(bmImage, { x: bm.x, y: bm.y, width: bm.w, height: bm.h });
+
+    return pdfDoc.save();
+  }
+
+  function buildDownloadFilenameBerman(){
+    var raw = valueOf(document.getElementById("bName"));
+    var safe = raw.replace(/[\\/:*?"<>|]+/g, "").trim().replace(/\s+/g, "-");
+    return "Berman-Intake-" + (safe || "Client") + ".pdf";
+  }
+
+  // ---- status line ----
+  var form = document.getElementById("intakeForm");
+  var statusLine = document.getElementById("statusLine");
+  var dirty = false;
+  form.addEventListener("input", function(){ dirty = true; statusLine.textContent = "Draft — unsaved changes"; });
+  form.addEventListener("change", function(){ dirty = true; statusLine.textContent = "Draft — unsaved changes"; });
+
+  // ---- auto-format every phone/fax field as (###) ###-#### while typing ----
+  function formatPhone(raw){
+    var digits = raw.replace(/\D/g, "").slice(0, 10);
+    if(digits.length === 0) return "";
+    if(digits.length < 4) return "(" + digits;
+    if(digits.length < 7) return "(" + digits.slice(0, 3) + ") " + digits.slice(3);
+    return "(" + digits.slice(0, 3) + ") " + digits.slice(3, 6) + "-" + digits.slice(6);
+  }
+  document.querySelectorAll('input[type="tel"]').forEach(function(el){
+    el.placeholder = "(555) 123-4567";
+    el.setAttribute("inputmode", "tel");
+  });
+  form.addEventListener("input", function(e){
+    if(e.target && e.target.type === "tel"){
+      var atEnd = e.target.selectionEnd === e.target.value.length;
+      e.target.value = formatPhone(e.target.value);
+      if(atEnd) e.target.setSelectionRange(e.target.value.length, e.target.value.length);
+    }
+  });
+
+  form.querySelectorAll('input[name="onJob"]').forEach(function(r){
+    r.addEventListener("change", function(){ setEmployerNotApplicable(this.value === "No"); });
+  });
+
+  document.getElementById("clearBtn").addEventListener("click", function(){
+    if(!confirm("Clear all fields on this form?")) return;
+    form.reset();
+    document.querySelectorAll(".pain-btn").forEach(function(b){ b.classList.remove("on"); });
+    bodyCtx.clearRect(0, 0, bodyCanvas.width, bodyCanvas.height);
+    bBodyCtx.clearRect(0, 0, bBodyCanvas.width, bBodyCanvas.height);
+    employerSection.querySelectorAll('input[type="text"], input[type="date"], input[type="radio"]').forEach(function(el){
+      el.disabled = false;
+      if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
+    });
+    bEmployerSection.querySelectorAll('input[type="text"], input[type="tel"], input[type="date"], input[type="radio"]').forEach(function(el){
+      el.disabled = false;
+      if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
+    });
+    statusLine.textContent = "Draft — cleared";
+  });
+
+  // ---- switch between the two firms' forms ----
+  var activeFirm = "tenx";
+  var FIRM_META = {
+    tenx: {
+      fields: "tenxFields", logo: "logo.png",
+      logoAlt: "10X LAW - Accident & Injury Attorneys",
+      title: "Personal Injury Sign-Up Form", topbar: "10X Intake"
+    },
+    berman: {
+      fields: "bermanFields", logo: "berman_logo.png",
+      logoAlt: "Berman Law Group - Attorneys at Law",
+      title: "Personal Injury Sign-Up Form", topbar: "BLG Intake"
+    }
+  };
+  function setActiveFirm(firm){
+    activeFirm = firm;
+    var meta = FIRM_META[firm];
+    if(firm === "berman") document.documentElement.setAttribute("data-firm", "berman");
+    else document.documentElement.removeAttribute("data-firm");
+    document.getElementById("tenxFields").style.display = firm === "tenx" ? "" : "none";
+    document.getElementById("bermanFields").style.display = firm === "berman" ? "" : "none";
+    document.getElementById("mastheadLogo").src = meta.logo;
+    document.getElementById("mastheadLogo").alt = meta.logoAlt;
+    document.getElementById("mastheadTitle").textContent = meta.title;
+    document.getElementById("topbarTitle").textContent = meta.topbar;
+    document.getElementById("firmTenx").classList.toggle("active", firm === "tenx");
+    document.getElementById("firmBerman").classList.toggle("active", firm === "berman");
+  }
+  document.getElementById("firmTenx").addEventListener("click", function(){ setActiveFirm("tenx"); });
+  document.getElementById("firmBerman").addEventListener("click", function(){ setActiveFirm("berman"); });
+
+  // ---- value readers ----
+  function valueOf(el){
+    if(!el) return "";
+    if(el.type === "checkbox") return el.checked ? "Yes" : "";
+    if(el.tagName === "SELECT"){
+      var opt = el.options[el.selectedIndex];
+      return opt ? opt.text : "";
+    }
+    if(el.type === "date") return formatDateForPdf(el.value);
+    if(el.type === "time") return formatTimeForPdf(el.value);
+    return (el.value || "").trim();
+  }
+  // native <input type="date"> stores "YYYY-MM-DD"; the PDF wants "MM/DD/YYYY"
+  function formatDateForPdf(v){
+    if(!v) return "";
+    var parts = v.split("-");
+    if(parts.length !== 3) return v;
+    return parts[1] + "/" + parts[2] + "/" + parts[0];
+  }
+  // native <input type="time"> stores 24-hour "HH:MM"; the PDF wants 12-hour with AM/PM
+  function formatTimeForPdf(v){
+    if(!v) return "";
+    var parts = v.split(":");
+    if(parts.length < 2) return v;
+    var hh = parseInt(parts[0], 10);
+    if(isNaN(hh)) return v;
+    var period = hh >= 12 ? "PM" : "AM";
+    var h12 = hh % 12;
+    if(h12 === 0) h12 = 12;
+    return h12 + ":" + parts[1] + " " + period;
+  }
+  function radioValue(name){
+    var checked = form.querySelector('input[name="'+name+'"]:checked');
+    return checked ? checked.value : "";
+  }
+
+  // ---- fill the real 10X LAW intake PDF using pdf-lib ----
+  function base64ToBytes(b64){
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  var SEAT_KEY = {
+    seatDriver: "Driver", seatFront: "FrontPassenger", seatRearDriver: "RearDriverSide",
+    seatRearMiddle: "RearMiddle", seatRearPass: "RearPassengerSide"
+  };
+
+  // "Seat location of client" should behave like a single-choice group even
+  // though it's built from checkboxes: checking one unchecks the rest.
+  (function(){
+    var seatIds = Object.keys(SEAT_KEY);
+    seatIds.forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      el.addEventListener("change", function(){
+        if(!this.checked) return;
+        seatIds.forEach(function(otherId){
+          if(otherId === id) return;
+          var other = document.getElementById(otherId);
+          if(other) other.checked = false;
+        });
+      });
+    });
+  })();
+
+  async function buildFilledPdf(){
+    var map = window.PDF_FIELD_MAP;
+    var bytes = base64ToBytes(window.TEMPLATE_PDF_BASE64);
+    var pdfDoc = await PDFLib.PDFDocument.load(bytes);
+    var pages = pdfDoc.getPages();
+    var font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var ink = PDFLib.rgb(0.09, 0.09, 0.12);
+
+    function pageOf(n){ return pages[n-1]; }
+
+    function fitSize(text, maxWidth, startSize){
+      var size = startSize;
+      while(size > 5.5 && font.widthOfTextAtSize(text, size) > maxWidth) size -= 0.5;
+      return size;
+    }
+
+    function drawSingle(loc, text){
+      if(!text) return;
+      var size = fitSize(text, loc.w, 8.5);
+      if(font.widthOfTextAtSize(text, size) > loc.w){
+        // still too wide at min size: truncate with ellipsis
+        while(text.length > 1 && font.widthOfTextAtSize(text+"…", size) > loc.w){
+          text = text.slice(0, -1);
+        }
+        text = text + "…";
+      }
+      pageOf(loc.page).drawText(text, { x: loc.x, y: loc.y, size: size, font: font, color: ink });
+    }
+
+    function drawCheck(loc){
+      pageOf(loc.page).drawText("X", { x: loc.x, y: loc.y, size: 9, font: fontBold, color: ink });
+    }
+
+    // Wraps text into the given line slots, filling each slot to ITS OWN width
+    // (slots can differ in width, e.g. a first line that starts mid-row next to
+    // a printed label). Returns null if the text does not fit at this size.
+    function wrapToSlots(text, locs, size){
+      var lines = [];
+      var slot = 0;
+      var cur = "";
+      var paragraphs = text.split(/\r?\n/);
+      for(var pi = 0; pi < paragraphs.length; pi++){
+        if(pi > 0){
+          if(slot >= locs.length) return null;
+          lines.push(cur); slot++; cur = "";
+        }
+        var words = paragraphs[pi].split(/\s+/).filter(Boolean);
+        for(var wi = 0; wi < words.length; wi++){
+          var w = words[wi];
+          var widthAvail = locs[Math.min(slot, locs.length - 1)].w;
+          // hard-break a single word too long for any line
+          while(font.widthOfTextAtSize(w, size) > widthAvail && w.length > 1){
+            var cut = w.length - 1;
+            while(cut > 1 && font.widthOfTextAtSize(w.slice(0, cut), size) > widthAvail) cut--;
+            if(cur){ if(slot >= locs.length) return null; lines.push(cur); slot++; cur = ""; }
+            if(slot >= locs.length) return null;
+            lines.push(w.slice(0, cut)); slot++;
+            w = w.slice(cut);
+            widthAvail = locs[Math.min(slot, locs.length - 1)].w;
+          }
+          var trial = cur ? cur + " " + w : w;
+          if(font.widthOfTextAtSize(trial, size) <= widthAvail){
+            cur = trial;
+          } else {
+            if(slot >= locs.length) return null;
+            lines.push(cur); slot++;
+            cur = w;
+            widthAvail = locs[Math.min(slot, locs.length - 1)].w;
+            if(slot >= locs.length && font.widthOfTextAtSize(cur, size) > widthAvail) return null;
+          }
+        }
+      }
+      if(slot >= locs.length) return null;
+      lines.push(cur);
+      return lines;
+    }
+
+    function drawMulti(locs, text){
+      if(!text) return;
+      var size = 8.5;
+      var lines = wrapToSlots(text, locs, size);
+      while(!lines && size > 6){
+        size -= 0.5;
+        lines = wrapToSlots(text, locs, size);
+      }
+      if(!lines){
+        // last resort at the smallest size: fill every slot, then mark the
+        // last one with an ellipsis rather than silently dropping content
+        size = 6;
+        lines = [];
+        var slot = 0, cur = "";
+        var words = text.replace(/\r?\n/g, " ").split(/\s+/).filter(Boolean);
+        for(var i = 0; i < words.length && slot < locs.length; i++){
+          var widthAvail = locs[slot].w;
+          var trial = cur ? cur + " " + words[i] : words[i];
+          if(!cur || font.widthOfTextAtSize(trial, size) <= widthAvail){
+            cur = trial;
+          } else {
+            lines.push(cur); slot++;
+            cur = slot < locs.length ? words[i] : cur;
+          }
+        }
+        if(slot < locs.length) lines.push(cur);
+        var lastIdx = lines.length - 1;
+        if(lastIdx >= 0){
+          var last = lines[lastIdx];
+          var lastW = locs[lastIdx].w;
+          while(last.length > 1 && font.widthOfTextAtSize(last + "…", size) > lastW) last = last.slice(0, -1);
+          lines[lastIdx] = last.replace(/\s+$/, "") + "…";
+        }
+      }
+      for(var li = 0; li < lines.length; li++){
+        pageOf(locs[li].page).drawText(lines[li], { x: locs[li].x, y: locs[li].y, size: size, font: font, color: ink });
+      }
+    }
+
+    // simple text fields
+    Object.keys(map.text).forEach(function(id){
+      var el = document.getElementById(id);
+      if(!el) return;
+      drawSingle(map.text[id], valueOf(el));
+    });
+
+    // radio value printed as plain text
+    Object.keys(map.radioAsText).forEach(function(name){
+      var v = radioValue(name);
+      if(v) drawSingle(map.radioAsText[name], v);
+    });
+
+    // single checkboxes
+    Object.keys(map.check).forEach(function(id){
+      var el = document.getElementById(id);
+      if(el && el.checked) drawCheck(map.check[id]);
+    });
+
+    // Y/N (and similar) radio groups
+    Object.keys(map.yn).forEach(function(name){
+      var v = radioValue(name);
+      var entry = map.yn[name];
+      if(v && entry.options[v]) drawCheck({ page: entry.page, x: entry.options[v].x, y: entry.options[v].y });
+    });
+
+    // AM/PM derived from the accident time field
+    var t = document.getElementById("accTime");
+    if(t && t.value){
+      var hh = parseInt(t.value.split(":")[0], 10);
+      var period = hh < 12 ? "AM" : "PM";
+      var e = map.yn.ampm && map.yn.ampm.options[period];
+      if(e) drawCheck({ page: map.yn.ampm.page, x: e.x, y: e.y });
+    }
+
+    // gender + seat location (checkbox groups keyed by option)
+    var genderV = radioValue("gender");
+    if(genderV && map.multiCheck.gender[genderV]) drawCheck(map.multiCheck.gender[genderV]);
+    Object.keys(SEAT_KEY).forEach(function(cbId){
+      var el = document.getElementById(cbId);
+      if(el && el.checked){
+        var key = SEAT_KEY[cbId];
+        if(map.multiCheck.seat[key]) drawCheck(map.multiCheck.seat[key]);
+      }
+    });
+
+    // social media rows
+    for(var s=1; s<=3; s++){
+      var loc = map.social[s];
+      var plat = valueOf(document.getElementById("sm"+s+"Platform"));
+      var user = valueOf(document.getElementById("sm"+s+"User"));
+      if(plat) drawSingle({page:loc.page, x:loc.platformX, y:loc.y, w:140}, plat);
+      if(user) drawSingle({page:loc.page, x:loc.userX, y:loc.y, w:170}, user);
+    }
+
+    // companions
+    for(var c=1;c<=5;c++){
+      var cloc = map.companionName[c];
+      var name = valueOf(document.getElementById("comp"+c+"Name"));
+      if(name) drawSingle({page:cloc.page, x:cloc.x, y:cloc.y, w:160}, name);
+      var sv = radioValue("comp"+c+"Signing");
+      var yn = map.yn["comp"+c+"Signing"];
+      if(sv && yn && yn.options[sv]) drawCheck({page:yn.page, x:yn.options[sv].x, y:yn.options[sv].y});
+    }
+
+    // doctor/hospital table
+    // Rows 3 and 4 print their "3."/"4." label on its own line, with the
+    // template's ruled blank sitting a row below (unlike rows 1, 2 and 5,
+    // where the number and the full-width blank share one line). To read
+    // consistently with those rows, entries for 3 and 4 are written next to
+    // their number instead, with a matching underline drawn beneath them.
+    var offsetRows = {
+      // the template's own extra ruled line sitting below "3."/"4." (the
+      // stray leftover row we cover up), given as a white-out rect
+      3: { coverY: 270, coverH: 17 },
+      4: { coverY: 234, coverH: 17 }
+    };
+    for(var d=1; d<=5; d++){
+      var row = map.doctorRows[d];
+      var isOffset = !!offsetRows[d];
+      var nameX = isOffset ? 82 : map.doctorX.name;
+      var vals = {
+        name: valueOf(document.getElementById("doc"+d+"Name")),
+        type: valueOf(document.getElementById("doc"+d+"Type")),
+        phone: valueOf(document.getElementById("doc"+d+"Phone")),
+        date: valueOf(document.getElementById("doc"+d+"Date"))
+      };
+      if(isOffset){
+        // hide the template's stray extra blank line for this row so only
+        // one clean line remains, matching rows 1, 2 and 5
+        pageOf(row.page).drawRectangle({
+          x: 58, y: offsetRows[d].coverY, width: 494, height: offsetRows[d].coverH,
+          color: PDFLib.rgb(1, 1, 1)
+        });
+      }
+      Object.keys(vals).forEach(function(k){
+        if(!vals[k]) return;
+        var x = k === "name" ? nameX : map.doctorX[k];
+        var w = k === "name" ? 140 : 150;
+        drawSingle({page:row.page, x:x, y:row.y, w:w}, vals[k]);
+      });
+      if(isOffset){
+        pageOf(row.page).drawLine({
+          start: { x: 64, y: row.y - 3 },
+          end: { x: 547, y: row.y - 3 },
+          thickness: 0.6,
+          color: ink
+        });
+      }
+    }
+
+    // pain scale
+    var painV = radioValue("painScale");
+    if(painV !== "" && map.pain[painV] !== undefined){
+      drawCheck(map.pain[painV]);
+    }
+
+    // multi-line text areas
+    drawMulti(map.multiline.accDesc, valueOf(document.getElementById("accDesc")));
+    drawMulti(map.multiline.injuryDesc, valueOf(document.getElementById("injuryDesc")));
+    drawMulti(map.multiline.priorInjuries, valueOf(document.getElementById("priorInjuries")));
+
+    // for any companion row with a name AND "Signing?" = Yes, prepend a
+    // "Companion of <name>" line to Additional Comments in the exported PDF
+    var companionNotes = [];
+    for(var cn = 1; cn <= 5; cn++){
+      var companionName = valueOf(document.getElementById("comp" + cn + "Name"));
+      var companionSigning = radioValue("comp" + cn + "Signing");
+      if(companionName && companionSigning === "Yes"){
+        companionNotes.push("Companion of " + companionName);
+      }
+    }
+    var additionalCommentsText = valueOf(document.getElementById("additionalComments"));
+    if(companionNotes.length){
+      additionalCommentsText = companionNotes.join("\n") +
+        (additionalCommentsText ? "\n\n" + additionalCommentsText : "");
+    }
+    drawMulti(map.multiline.additionalComments, additionalCommentsText);
+
+    // body-map highlights: the on-page canvas is the exact pixel size of the
+    // diagram image printed on page 4, so it drops onto the same rectangle.
+    var bm = map.bodyMapImage;
+    var bmDataUrl = bodyCanvas.toDataURL("image/png");
+    var bmBytes = base64ToBytes(bmDataUrl.split(",")[1]);
+    var bmImage = await pdfDoc.embedPng(bmBytes);
+    pageOf(bm.page).drawImage(bmImage, { x: bm.x, y: bm.y, width: bm.w, height: bm.h });
+
+    return pdfDoc.save();
+  }
+
+  // "10XLaw-Intake-<Client Name>.pdf", stripped of characters that aren't
+  // safe in a filename; falls back to "Client" if the name field is blank.
+  function buildDownloadFilename(){
+    var raw = valueOf(document.getElementById("cName"));
+    var safe = raw.replace(/[\\/:*?"<>|]+/g, "").trim().replace(/\s+/g, "-");
+    return "10XLaw-Intake-" + (safe || "Client") + ".pdf";
+  }
+
+  // Saves a PDF blob to disk. Uses the Claude Artifact downloads API when
+  // running inside a Claude Artifact (window.claude present); otherwise
+  // falls back to a plain browser download via an <a download> blob link,
+  // which is what runs when this form is served from this Next.js app.
+  async function savePdfBlob(blob, filename){
+    if(window.claude && typeof window.claude.use === "function"){
+      var downloads = await window.claude.use("downloads");
+      if(downloads){
+        var res = await downloads.save({ filename: filename, data: blob });
+        return res.status === "saved" ? "PDF saved" : "PDF sent";
+      }
+    }
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    return "PDF saved";
+  }
+
+  document.getElementById("downloadBtn").addEventListener("click", async function(){
+    var btn = this;
+    btn.disabled = true;
+    var prevLabel = btn.textContent;
+    btn.textContent = "Building PDF…";
+    try{
+      var bytes = activeFirm === "berman" ? await buildFilledPdfBerman() : await buildFilledPdf();
+      var blob = new Blob([bytes], { type: "application/pdf" });
+      var fname = activeFirm === "berman" ? buildDownloadFilenameBerman() : buildDownloadFilename();
+      statusLine.textContent = await savePdfBlob(blob, fname);
+    } catch(err){
+      console.error(err);
+      if(err && err.code === "declined"){
+        statusLine.textContent = "Download cancelled";
+      } else {
+        statusLine.textContent = "Could not build PDF — try again";
+      }
+    } finally {
+      btn.disabled = false;
+      btn.textContent = prevLabel;
+    }
+  });
+
+})();
+</script>
