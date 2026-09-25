@@ -16,6 +16,10 @@ const isPublicRoute = createRouteMatcher([
 // dashboard. Change this to your real domain (or set several).
 const ALLOWED_EMAIL_DOMAINS = ["10xlaw.com"];
 
+// Individual addresses allowed in regardless of domain (e.g. an admin's
+// personal account). Keep these lowercase.
+const ALLOWED_EMAILS = ["ryancampeau@gmail.com"];
+
 export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return;
 
@@ -30,9 +34,14 @@ export default clerkMiddleware(async (auth, req) => {
     (sessionClaims?.email as string | undefined) ??
     (sessionClaims?.primaryEmailAddress as string | undefined) ??
     "";
-  const domain = email.split("@")[1]?.toLowerCase();
+  const normalizedEmail = email.trim().toLowerCase();
+  const domain = normalizedEmail.split("@")[1];
 
-  if (ALLOWED_EMAIL_DOMAINS.length && !ALLOWED_EMAIL_DOMAINS.includes(domain ?? "")) {
+  const allowed =
+    ALLOWED_EMAILS.includes(normalizedEmail) ||
+    ALLOWED_EMAIL_DOMAINS.includes(domain ?? "");
+
+  if (!allowed) {
     return NextResponse.redirect(new URL("/not-authorized", req.url));
   }
 });
