@@ -11,14 +11,13 @@ const isPublicRoute = createRouteMatcher([
   "/not-authorized",
 ]);
 
-// Restrict to your firm's email domain even though the Microsoft OAuth
-// connection itself might be left open to multiple tenants in Clerk's
-// dashboard. Change this to your real domain (or set several).
-const ALLOWED_EMAIL_DOMAINS = ["10xlaw.com"];
+// Only staff at these firms' email domains can reach the form, even if
+// Clerk's own sign-up is left open to anyone.
+const ALLOWED_EMAIL_DOMAINS = ["10xlaw.com", "thebermanlawgroup.com"];
 
 // Individual addresses allowed in regardless of domain (e.g. an admin's
 // personal account). Keep these lowercase.
-const ALLOWED_EMAILS = ["ryancampeau@gmail.com"];
+const ALLOWED_EMAILS: string[] = [];
 
 export default clerkMiddleware(async (auth, req) => {
   if (isPublicRoute(req)) return;
