@@ -1385,7 +1385,7 @@
       <div class="subhead">Mark Areas of Pain</div>
       <p class="hint">Click and drag directly on the diagram below to highlight the injured area(s), exactly as printed on the intake form.</p>
       <div class="bodymap-frame">
-        <img id="bBodyMapImg" src="berman_bodymap.png" alt="Body diagram for marking areas of injury" draggable="false">
+        <img id="bBodyMapImg" data-src="berman_bodymap.png" alt="Body diagram for marking areas of injury" draggable="false">
         <canvas id="bBodyMapCanvas" aria-label="Draw on the body diagram to mark pain"></canvas>
       </div>
       <div class="bodymap-controls">
@@ -1652,7 +1652,9 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="pdf-data.js"></script>
-<script src="pdf-data-berman.js"></script>
+<!-- pdf-data-berman.js (443KB, the Berman PDF template as base64) is loaded
+     lazily by ensureBermanAssets() below, only once someone actually opens
+     the Berman form, instead of on every visit regardless of firm. -->
 <script>
 (function(){
   "use strict";
@@ -2145,6 +2147,9 @@
   }
 
   async function buildFilledPdfBerman(){
+    // safety net: normally already loaded by setActiveFirm("berman"), but
+    // guard here too in case this ever runs before that finished.
+    await ensureBermanAssets();
     var map = window.PDF_FIELD_MAP_BERMAN;
     var bytes = base64ToBytesB(window.TEMPLATE_PDF_BASE64_BERMAN);
     var pdfDoc = await PDFLib.PDFDocument.load(bytes);
@@ -2389,11 +2394,39 @@
       title: "Personal Injury Sign-Up Form", topbar: "BLG Intake"
     }
   };
+  // ---- lazy-load Berman's assets (443KB script + 316KB body-map image) ----
+  // only once someone actually opens the Berman form, instead of on every
+  // visit regardless of which firm is used.
+  var bermanScriptPromise = null;
+  function loadBermanScript(){
+    if(!bermanScriptPromise){
+      bermanScriptPromise = new Promise(function(resolve, reject){
+        var s = document.createElement("script");
+        s.src = "pdf-data-berman.js";
+        s.onload = resolve;
+        s.onerror = function(){ bermanScriptPromise = null; reject(new Error("Failed to load pdf-data-berman.js")); };
+        document.body.appendChild(s);
+      });
+    }
+    return bermanScriptPromise;
+  }
+  function ensureBermanAssets(){
+    if(bBodyImg.dataset.src){
+      bBodyImg.src = bBodyImg.dataset.src;
+      delete bBodyImg.dataset.src;
+    }
+    return loadBermanScript();
+  }
+
   function setActiveFirm(firm){
     activeFirm = firm;
     var meta = FIRM_META[firm];
-    if(firm === "berman") document.documentElement.setAttribute("data-firm", "berman");
-    else document.documentElement.removeAttribute("data-firm");
+    if(firm === "berman"){
+      document.documentElement.setAttribute("data-firm", "berman");
+      ensureBermanAssets().catch(function(err){ console.error(err); });
+    } else {
+      document.documentElement.removeAttribute("data-firm");
+    }
     document.getElementById("tenxFields").style.display = firm === "tenx" ? "" : "none";
     document.getElementById("bermanFields").style.display = firm === "berman" ? "" : "none";
     document.getElementById("mastheadLogo").src = meta.logo;
