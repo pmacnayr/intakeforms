@@ -322,6 +322,43 @@
     border-radius:6px;
   }
 
+  .required-badge{
+    position:fixed;
+    left:50%;
+    bottom:calc(18px + env(safe-area-inset-bottom, 0px));
+    transform:translateX(-50%);
+    z-index:40;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--danger);
+    color:#fff;
+    font-family:"Source Sans 3", sans-serif;
+    font-weight:600;
+    font-size:.82rem;
+    padding:9px 16px;
+    border-radius:999px;
+    box-shadow:0 6px 20px rgba(0,0,0,.22);
+    white-space:nowrap;
+    cursor:pointer;
+    border:none;
+  }
+  .required-badge .count{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:20px;
+    height:20px;
+    padding:0 5px;
+    border-radius:999px;
+    background:rgba(255,255,255,.25);
+    font-size:.78rem;
+    font-variant-numeric:tabular-nums;
+  }
+  @media (max-width:480px){
+    .required-badge{ font-size:.78rem; padding:8px 14px; }
+  }
+
   @media (max-width:640px){
     .toprow{grid-template-columns:1fr;}
     .grid2, .grid3, .grid4{grid-template-columns:1fr;}
@@ -1608,6 +1645,11 @@
   </form>
 </main>
 
+<button type="button" class="required-badge" id="requiredBadge" hidden>
+  <span class="count" id="requiredBadgeCount">0</span>
+  <span id="requiredBadgeText">required fields remaining</span>
+</button>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="pdf-data.js"></script>
 <script src="pdf-data-berman.js"></script>
@@ -2823,15 +2865,28 @@
     r.box.classList.toggle(r.box.tagName === "DIV" ? "missing-group" : "missing", on);
   }
 
-  // Returns the unanswered entries for the active firm and outlines them.
+  // ---- floating "N required fields remaining" badge, always live ----
+  var requiredBadge = document.getElementById("requiredBadge");
+  var requiredBadgeCount = document.getElementById("requiredBadgeCount");
+  var requiredBadgeText = document.getElementById("requiredBadgeText");
+  function computeMissing(){
+    return RESOLVED[activeFirm].filter(function(r){ return !isAnswered(r); });
+  }
+  function updateBadge(missing){
+    requiredBadge.hidden = !missing.length;
+    requiredBadgeCount.textContent = missing.length;
+    requiredBadgeText.textContent = missing.length === 1 ? "required field remaining" : "required fields remaining";
+  }
+
+  // Recomputes missing fields for the active firm; outlines them (once the
+  // user has tried to download) and always refreshes the floating badge.
   var validationShown = false;
   function checkRequired(){
-    var missing = [];
-    RESOLVED[activeFirm].forEach(function(r){
-      var ok = isAnswered(r);
-      setMissing(r, !ok);
-      if(!ok) missing.push(r);
-    });
+    var missing = computeMissing();
+    if(validationShown){
+      RESOLVED[activeFirm].forEach(function(r){ setMissing(r, missing.indexOf(r) !== -1); });
+    }
+    updateBadge(missing);
     return missing;
   }
   function clearMissingMarks(){
@@ -2839,19 +2894,31 @@
     document.querySelectorAll(".missing, .missing-group").forEach(function(el){
       el.classList.remove("missing", "missing-group");
     });
+    updateBadge(computeMissing());
   }
-  // once the user has tried to download, keep the outlines in sync as they fill things in
+  // keep the badge (and, once shown, the outlines) in sync as the user types
   ["input", "change"].forEach(function(ev){
-    form.addEventListener(ev, function(){ if(validationShown) checkRequired(); });
+    form.addEventListener(ev, checkRequired);
   });
   form.addEventListener("reset", clearMissingMarks);
   document.getElementById("firmTenx").addEventListener("click", clearMissingMarks);
   document.getElementById("firmBerman").addEventListener("click", clearMissingMarks);
+  requiredBadge.addEventListener("click", function(){
+    var missing = RESOLVED[activeFirm].filter(function(r){ return !isAnswered(r); });
+    if(!missing.length) return;
+    validationShown = true;
+    checkRequired();
+    var first = missing[0];
+    (first.box || first.controls[0]).scrollIntoView({ behavior:"smooth", block:"center" });
+    var focusable = first.controls.filter(function(c){ return !c.disabled; })[0];
+    if(focusable) focusable.focus({ preventScroll:true });
+  });
+  updateBadge(computeMissing());
 
   document.getElementById("downloadBtn").addEventListener("click", async function(){
+    validationShown = true;
     var missing = checkRequired();
     if(missing.length){
-      validationShown = true;
       statusLine.textContent = missing.length === 1
         ? "1 required field is missing"
         : missing.length + " required fields are missing";
