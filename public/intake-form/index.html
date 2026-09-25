@@ -310,6 +310,18 @@
 
   .section-footer-note{font-size:.76rem; color:var(--ink-soft); margin-top:6px;}
 
+  /* required fields: asterisk on the question label, red outline when missing */
+  .req::after{content:" *"; color:var(--danger); font-weight:700;}
+  input.missing, select.missing, textarea.missing{
+    border-color:var(--danger);
+    box-shadow:0 0 0 1px var(--danger);
+  }
+  .missing-group{
+    outline:2px solid var(--danger);
+    outline-offset:3px;
+    border-radius:6px;
+  }
+
   @media (max-width:640px){
     .toprow{grid-template-columns:1fr;}
     .grid2, .grid3, .grid4{grid-template-columns:1fr;}
@@ -2717,7 +2729,138 @@
     return "PDF saved";
   }
 
+  // ---- required fields ----
+  // Each entry is an element id, {radio: groupName}, or {checks: [ids], other: id}
+  // (a checkbox group that's satisfied by any box or the "Other" text).
+  // Fields the form has locked to N/A (disabled) count as answered.
+  var REQUIRED = {
+    tenx: [
+      "interviewer", "intakeDate", "source", "intakeTime",
+      "cName", {radio:"gender"}, "cAddress", "cCity", "cState", "cZip",
+      "cPhone", "cEmail", "cDob", "cPob", "cMarital", "cLang",
+      {radio:"bilingual"}, "cSsn", "cGovOwed", {radio:"ssRecipient"},
+      {radio:"companionsAny"}, {radio:"releasesSigned"},
+      {radio:"photos"}, "accDate", "accTime", "accWeather",
+      {checks:["typeAA","typeSF"], other:"typeOther"}, "accDesc",
+      {radio:"citations"}, {radio:"seatbelt"}, {radio:"carseat"}, {radio:"airbags"},
+      {checks:["seatDriver","seatFront","seatRearDriver","seatRearMiddle","seatRearPass"]},
+      {radio:"relativeVehicle"}, "vMake", "vModel", "vDamageArea",
+      {radio:"vehicleServiced"}, {radio:"onJob"},
+      {radio:"ambulance"}, {radio:"admitted"},
+      "injuryDesc", {radio:"painScale"}, "priorInjuries",
+      {radio:"priorAtty"}, {radio:"reprAtty"},
+      "caiClient", "caiCarrier", "hviOwner", "hviCarrier", "defDriver", "defCarrier",
+      "stmtName1", "ecName", "ecPhone", {radio:"presettlement"}
+    ],
+    berman: [
+      "bInterviewer", "bIntakeDate", "bSource", "bIntakeTime",
+      "bName", {radio:"bGender"}, "bAddress", "bCity", "bState", "bZip",
+      "bPhone", "bEmail", "bDob", "bPob", "bMaritalStatus",
+      {radio:"bBilingual"}, "bSSN", "bGovMoney", {radio:"bSSARecipient"},
+      {radio:"bCompanionsAny"},
+      {radio:"bPhotos"}, "bAccDate", "bAccTime", "bWeather",
+      {radio:"bCaseType"}, "bAccDesc",
+      {radio:"bCitationsGiven"}, {radio:"bSeatbelt"}, {radio:"bCarseat"}, {radio:"bAirbags"},
+      {radio:"bSeatLocation"},
+      {radio:"bRelativeVehicle"}, "bVehMake", "bVehModel", "bVehDamageArea",
+      {radio:"bServiced90"}, {radio:"bOnJob"},
+      {radio:"bAmbulance"}, {radio:"bAdmitted"},
+      "bInjuryDesc", {radio:"bPainScale"}, "bPriorInjuries",
+      "bPriorAttorneysList", {radio:"bRepAttorney"},
+      "bAutoClient", "bAutoCarrier", "bHostOwner", "bHostCarrier", "bDefDriverName", "bDefCarrier",
+      "bStatement1Name", "bEcName", "bEcPhone", {radio:"bPresettlement"}
+    ]
+  };
+
+  // Resolve an entry to {controls, box, label}: the inputs to check, the
+  // element to outline when missing, and the question label to star.
+  function resolveRequired(item){
+    if(typeof item === "string"){
+      var el = document.getElementById(item);
+      if(!el) return null;
+      var field = el.closest("label.field");
+      return { controls:[el], box:el, label: field && field.querySelector(".field-label") };
+    }
+    if(item.radio){
+      var radios = Array.prototype.slice.call(form.querySelectorAll('input[name="'+item.radio+'"]'));
+      if(!radios.length) return null;
+      var first = radios[0];
+      var ynField = first.closest(".yn-field");
+      var yn = first.closest(".yn, .check-row, .pain-scale");
+      var label = ynField ? ynField.querySelector(".field-label")
+                : yn ? yn.previousElementSibling : null;
+      return { controls:radios, box:yn, label:label };
+    }
+    var checks = item.checks.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+    if(!checks.length) return null;
+    var other = item.other ? document.getElementById(item.other) : null;
+    var row = checks[0].closest(".row");
+    return {
+      controls: other ? checks.concat([other]) : checks,
+      box: checks[0].closest(".check-row"),
+      label: row && row.querySelector(".field-label")
+    };
+  }
+
+  function isAnswered(r){
+    var live = r.controls.filter(function(c){ return !c.disabled; });
+    if(!live.length) return true;
+    return live.some(function(c){
+      if(c.type === "radio" || c.type === "checkbox") return c.checked;
+      if(!(c.value || "").trim()) return false;
+      return c.checkValidity ? c.checkValidity() : true;
+    });
+  }
+
+  var RESOLVED = {};
+  Object.keys(REQUIRED).forEach(function(firm){
+    RESOLVED[firm] = REQUIRED[firm].map(resolveRequired).filter(Boolean);
+    RESOLVED[firm].forEach(function(r){ if(r.label) r.label.classList.add("req"); });
+  });
+
+  function setMissing(r, on){
+    if(!r.box) return;
+    r.box.classList.toggle(r.box.tagName === "DIV" ? "missing-group" : "missing", on);
+  }
+
+  // Returns the unanswered entries for the active firm and outlines them.
+  var validationShown = false;
+  function checkRequired(){
+    var missing = [];
+    RESOLVED[activeFirm].forEach(function(r){
+      var ok = isAnswered(r);
+      setMissing(r, !ok);
+      if(!ok) missing.push(r);
+    });
+    return missing;
+  }
+  function clearMissingMarks(){
+    validationShown = false;
+    document.querySelectorAll(".missing, .missing-group").forEach(function(el){
+      el.classList.remove("missing", "missing-group");
+    });
+  }
+  // once the user has tried to download, keep the outlines in sync as they fill things in
+  ["input", "change"].forEach(function(ev){
+    form.addEventListener(ev, function(){ if(validationShown) checkRequired(); });
+  });
+  form.addEventListener("reset", clearMissingMarks);
+  document.getElementById("firmTenx").addEventListener("click", clearMissingMarks);
+  document.getElementById("firmBerman").addEventListener("click", clearMissingMarks);
+
   document.getElementById("downloadBtn").addEventListener("click", async function(){
+    var missing = checkRequired();
+    if(missing.length){
+      validationShown = true;
+      statusLine.textContent = missing.length === 1
+        ? "1 required field is missing"
+        : missing.length + " required fields are missing";
+      var first = missing[0];
+      (first.box || first.controls[0]).scrollIntoView({ behavior:"smooth", block:"center" });
+      var focusable = first.controls.filter(function(c){ return !c.disabled; })[0];
+      if(focusable) focusable.focus({ preventScroll:true });
+      return;
+    }
     var btn = this;
     btn.disabled = true;
     var prevLabel = btn.textContent;
