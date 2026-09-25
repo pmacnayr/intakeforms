@@ -18,3 +18,6 @@ yarn-error.log*
 # OS / editor
 .DS_Store
 *.swp
+
+# next.js generated types
+next-env.d.ts
