@@ -2369,14 +2369,17 @@
     document.querySelectorAll(".pain-btn").forEach(function(b){ b.classList.remove("on"); });
     bodyCtx.clearRect(0, 0, bodyCanvas.width, bodyCanvas.height);
     bBodyCtx.clearRect(0, 0, bBodyCanvas.width, bBodyCanvas.height);
-    employerSection.querySelectorAll('input[type="text"], input[type="date"], input[type="radio"]').forEach(function(el){
+    // form.reset() restores values and checked state, but not anything the
+    // N/A cascades (setFieldPlaceholder, setEmployerNotApplicable,
+    // setBermanEmployerNotApplicable) changed directly — a field's disabled
+    // flag, a date input temporarily swapped to type="text", or an injected
+    // "N/A"/"Not Provided" <option>. Sweep the whole form (both firms) to
+    // undo all of those, not just the two employer sections.
+    form.querySelectorAll("input, select, textarea").forEach(function(el){
       el.disabled = false;
       if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
     });
-    bEmployerSection.querySelectorAll('input[type="text"], input[type="tel"], input[type="date"], input[type="radio"]').forEach(function(el){
-      el.disabled = false;
-      if(el.dataset.wasDate){ el.type = "date"; delete el.dataset.wasDate; }
-    });
+    form.querySelectorAll('option[data-injected="1"]').forEach(function(opt){ opt.remove(); });
     statusLine.textContent = "Draft — cleared";
   });
 
